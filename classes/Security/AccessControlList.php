@@ -128,10 +128,8 @@ class AccessControlList
         string $resourceType = '*',
         string $resourceId = '*'
     ): bool {
-        foreach ($this->scope as $key => $value) {
-            if (!array_key_exists($key, $this->context) || $this->context[$key] !== $value) {
-                return false;
-            }
+        if (!$this->doesContextMatchScope()) {
+            return false;
         }
         if ($this->allowsEverything) {
             return true;
@@ -214,6 +212,16 @@ class AccessControlList
             $this->addAllowAce($service, $action, $resource->type, (string)$id);
         }
         return $this;
+    }
+
+    private function doesContextMatchScope(): bool
+    {
+        foreach ($this->scope as $key => $value) {
+            if (!array_key_exists($key, $this->context) || $this->context[$key] !== $value) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private function flattenResources(array $in): array
