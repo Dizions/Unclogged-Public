@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 use Dizions\Unclogged\Database\Database;
 use Dizions\Unclogged\Errors\ErrorHandler;
 use Dizions\Unclogged\Errors\HttpUnauthorizedException;
@@ -13,10 +11,13 @@ use Dizions\Unclogged\Request\Request;
 use Dizions\Unclogged\Security\AlwaysInvalidCredentials;
 use Dizions\Unclogged\Security\AlwaysMissingCredentials;
 use Dizions\Unclogged\Security\AlwaysSucceedsCredentials;
-use Dizions\Unclogged\Security\CredentialsValidator;
 use Dizions\Unclogged\Security\CredentialsInterface;
+use Dizions\Unclogged\Security\CredentialsValidator;
 use Dizions\Unclogged\Setup\Environment;
 use Dizions\Unclogged\Setup\InvalidConfigurationException;
+use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * @covers Dizions\Unclogged\Application
@@ -39,6 +40,12 @@ final class ApplicationTest extends TestCase
     {
         $app = new Application(new Environment([]), $this->createMock(Request::class));
         $this->assertInstanceOf(Request::class, $app->getRequest());
+    }
+
+    public function testResponseEmitterCanBeRetrieved(): void
+    {
+        $app = new Application(new Environment([]), $this->createMock(Request::class));
+        $this->assertInstanceOf(EmitterInterface::class, $app->getResponseEmitter());
     }
 
     public function testLoggerCanBeRetrieved(): void
@@ -68,7 +75,7 @@ final class ApplicationTest extends TestCase
     public function testErrorResponseCanBeCreated(): void
     {
         $app = new Application(new Environment([]), $this->createMock(Request::class));
-        $this->assertInstanceOf(ResponseInterface::class, $app->createErrorResponse('', 500));
+        $this->assertInstanceOf(ResponseInterface::class, $app->generateErrorResponse('', 500));
     }
 
     public function testApplicationCanGenerateDefaultName(): void

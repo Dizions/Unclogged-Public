@@ -27,7 +27,7 @@ class HttpException extends Exception
 
     public function getResponse(): ResponseInterface
     {
-        return $this->getApplication()->createErrorResponse($this->getMessage(), $this->getCode());
+        return $this->getApplication()->generateErrorResponse($this->getMessage(), $this->getCode());
     }
 
     protected function getApplication(): Application

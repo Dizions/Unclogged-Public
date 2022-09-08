@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Errors;
 
+use Dizions\Unclogged\TestCase;
 use ErrorException;
+use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use Dizions\Unclogged\TestCase;
 
 /**
  * @covers Dizions\Unclogged\Errors\ErrorHandler
@@ -33,7 +33,7 @@ final class ErrorHandlerTest extends TestCase
     public function testErrorHandlerConvertsErrorToException(): void
     {
         $handler = new ErrorHandler($this->createEmptyApplication());
-        $handler->registerErrorHandler()->setLogger(new NullLogger());
+        $handler->registerErrorHandler();
         $registeredHandler = set_error_handler(null);
         $this->assertIsCallable($registeredHandler);
         $this->expectException(ErrorException::class);
@@ -73,13 +73,17 @@ final class ErrorHandlerTest extends TestCase
         $this->assertSame($original, set_error_handler(null));
     }
 
-    public function testExceptionHandlerReturnsResponse(): void
+    public function testExceptionHandlerEmitsResponse(): void
     {
-        $handler = new ErrorHandler($this->createEmptyApplication());
-        $handler->registerExceptionHandler()->setLogger(new NullLogger());
+        $emitter = $this->createMock(EmitterInterface::class);
+        $emitter->expects($this->once())->method('emit');
+        $app = $this->createEmptyApplication();
+        $app->setFactoryFunction(EmitterInterface::class, fn () => $emitter);
+        $handler = new ErrorHandler($app);
+        $handler->registerExceptionHandler();
         $registeredHandler = set_exception_handler(null);
         $this->assertIsCallable($registeredHandler);
-        $this->assertInstanceOf(ResponseInterface::class, $registeredHandler(new ErrorException()));
+        $registeredHandler(new ErrorException());
     }
 
     public function testExceptionHandlerCanBeUnregistered(): void
@@ -100,33 +104,25 @@ final class ErrorHandlerTest extends TestCase
         $this->assertSame($original, set_exception_handler(null));
     }
 
-    public function testExceptionHandlerPassesResponseToCallback(): void
+    public function testExceptionHandlerEmitsResponseGeneratedByHttpException(): void
     {
-        $handler = new ErrorHandler($this->createEmptyApplication());
-        $response = null;
-        $callback = function ($arg) use (&$response) {
-            $response = $arg;
-        };
-        $handler->registerExceptionHandler($callback)->setLogger(new NullLogger());
-        $registeredHandler = set_exception_handler(null);
-        $this->assertIsCallable($registeredHandler);
-        $registeredHandler(new ErrorException());
-        $this->assertInstanceOf(ResponseInterface::class, $response);
-    }
-
-    public function testExceptionHandlerReturnsResponseGeneratedByHttpException(): void
-    {
-        $handler = new ErrorHandler($this->createEmptyApplication());
-        $handler->setLogger(new NullLogger());
         $response = $this->createMock(ResponseInterface::class);
+        $emitter = $this->createMock(EmitterInterface::class);
+        $emitter->expects($this->once())->method('emit')->with($response);
+        $app = $this->createEmptyApplication();
+        $app->setFactoryFunction(EmitterInterface::class, fn () => $emitter);
+        $handler = new ErrorHandler($app);
         $exception = $this->createMock(HttpException::class);
         $exception->expects($this->once())->method('getResponse')->will($this->returnValue($response));
-        $this->assertSame($response, $handler->except($exception));
+        $handler->except($exception);
     }
 
     public function testExceptionHandlerRunsPreviousHandler(): void
     {
-        $handler = new ErrorHandler($this->createEmptyApplication());
+        $emitter = $this->createMock(EmitterInterface::class);
+        $app = $this->createEmptyApplication();
+        $app->setFactoryFunction(EmitterInterface::class, fn () => $emitter);
+        $handler = new ErrorHandler($app);
         $run = false;
         set_exception_handler(function () use (&$run) {
             $run = true;
@@ -139,7 +135,10 @@ final class ErrorHandlerTest extends TestCase
 
     public function testExceptionHandlerLogsMessage(): void
     {
-        $handler = new ErrorHandler($this->createEmptyApplication());
+        $emitter = $this->createMock(EmitterInterface::class);
+        $app = $this->createEmptyApplication();
+        $app->setFactoryFunction(EmitterInterface::class, fn () => $emitter);
+        $handler = new ErrorHandler($app);
         $mockLogger = $this->createMock(LoggerInterface::class);
         $mockLogger->expects($this->once())->method('error');
         $handler->setLogger($mockLogger);
@@ -148,7 +147,10 @@ final class ErrorHandlerTest extends TestCase
 
     public function testExceptionHandlerLogsSecondaryExceptionWhileRunningPreviousHandler(): void
     {
-        $handler = new ErrorHandler($this->createEmptyApplication());
+        $emitter = $this->createMock(EmitterInterface::class);
+        $app = $this->createEmptyApplication();
+        $app->setFactoryFunction(EmitterInterface::class, fn () => $emitter);
+        $handler = new ErrorHandler($app);
         $mockLogger = $this->createMock(LoggerInterface::class);
         $mockLogger->expects($this->exactly(2))->method('error');
         set_exception_handler(function () {

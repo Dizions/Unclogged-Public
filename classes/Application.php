@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged;
 
-use Laminas\Diactoros\Response\JsonResponse;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 use Dizions\Unclogged\Database\Database;
 use Dizions\Unclogged\Errors\ErrorHandler;
 use Dizions\Unclogged\Errors\HttpUnauthorizedException;
 use Dizions\Unclogged\Logger\LoggerAware;
 use Dizions\Unclogged\Request\Request;
-use Dizions\Unclogged\Security\CredentialsInterface;
-use Dizions\Unclogged\Security\CredentialsValidator;
-use Dizions\Unclogged\Security\InvalidCredentialsException;
-use Dizions\Unclogged\Security\MissingCredentialsException;
+use Dizions\Unclogged\Security\{CredentialsInterface, CredentialsValidator};
+use Dizions\Unclogged\Security\{InvalidCredentialsException, MissingCredentialsException};
 use Dizions\Unclogged\Setup\Environment;
 use Dizions\Unclogged\Setup\InvalidConfigurationException;
+use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 class Application extends LoggerAware
 {
@@ -27,6 +27,7 @@ class Application extends LoggerAware
     private ErrorHandler $errorHandler;
     private string $name;
     private Request $request;
+    private EmitterInterface $responseEmitter;
     /** @var array<string, callable> */
     private array $factoryFunctions = [];
 
@@ -39,9 +40,10 @@ class Application extends LoggerAware
             ErrorHandler::class,
             fn ($app) => (new ErrorHandler($app))->setLogger($app->getLogger())
         );
+        $this->setFactoryFunction(EmitterInterface::class, fn () => new SapiEmitter());
     }
 
-    public function createErrorResponse(string $message, int $code): ResponseInterface
+    public function generateErrorResponse(string $message, int $code): ResponseInterface
     {
         return new JsonResponse(['message' => $message], $code);
     }
@@ -94,6 +96,11 @@ class Application extends LoggerAware
     public function getRequest(): Request
     {
         return $this->request;
+    }
+
+    public function getResponseEmitter(): EmitterInterface
+    {
+        return $this->responseEmitter ??= $this->createNew(EmitterInterface::class);
     }
 
     /**

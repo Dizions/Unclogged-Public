@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Errors;
 
-use ErrorException;
-use Psr\Http\Message\ResponseInterface;
-use Throwable;
 use Dizions\Unclogged\Application;
 use Dizions\Unclogged\Logger\LoggerAware;
+use ErrorException;
+use Throwable;
 
 class ErrorHandler extends LoggerAware
 {
@@ -44,36 +43,25 @@ class ErrorHandler extends LoggerAware
         return $this;
     }
 
-    /**
-     * Register exception handler, with an optional callback to use when an exception is handled. If
-     * provided, the callback will be run with a Psr\Http\Message\ResponseInterface parameter before
-     * execution terminates.
-     *
-     * @param callable|null $responseCallback A function ResponseInterface parameter
-     * @return ErrorHandler $this
-     */
-    public function registerExceptionHandler(callable $responseCallback = null): self
+    public function registerExceptionHandler(): self
     {
-        if ($responseCallback) {
-            $this->previousExceptionHandler =
-                set_exception_handler(fn(Throwable $e) => $responseCallback($this->except($e)));
-        } else {
-            $this->previousExceptionHandler = set_exception_handler(fn(Throwable $e) => $this->except($e));
-        }
+        $this->previousExceptionHandler = set_exception_handler([$this, 'except']);
         $this->exceptionHandlerRegistered = true;
         return $this;
     }
 
-    public function except(Throwable $exception): ResponseInterface
+    public function except(Throwable $exception): void
     {
+        if ($exception instanceof HttpException) {
+            $this->application->getResponseEmitter()->emit($exception->getResponse());
+            return;
+        }
         $message = 'Uncaught {exception}: "{message}" in {file}:{line}';
         $this->logException($message, $exception);
         $this->callPreviousExceptionHandler($exception);
-        if ($exception instanceof HttpException) {
-            return $exception->getResponse();
-        } else {
-            return $this->application->createErrorResponse('Internal Server Error', 500);
-        }
+        $this->application->getResponseEmitter()->emit(
+            $this->application->generateErrorResponse('Internal Server Error', 500)
+        );
     }
 
     public function errorToException(
