@@ -117,6 +117,7 @@ class AccessControlList
         return $this->scope;
     }
 
+    /** @return int|float|string|null */
     public function getScopeValue(string $key)
     {
         return $this->scope[$key] ?? null;
