@@ -118,13 +118,20 @@ class Application extends LoggerAware
      * @psalm-template Subject of object
      * @psalm-param class-string<Subject> $class
      * @psalm-return Subject
-     * @throws InvalidConfigurationException If no factory function was registered for $class
+     * @throws InvalidConfigurationException If no valid factory function was registered for $class
      */
     protected function createNew(string $class): object
     {
         if (!array_key_exists($class, $this->factoryFunctions)) {
             throw new InvalidConfigurationException("No factory function registered for $class");
         }
-        return $this->factoryFunctions[$class]($this);
+        $object = $this->factoryFunctions[$class]($this);
+        if (!is_a($object, $class)) {
+            $actual = get_class($object);
+            throw new InvalidConfigurationException(
+                "Factory function registered for $class produced object of type $actual"
+            );
+        }
+        return $object;
     }
 }

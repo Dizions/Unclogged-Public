@@ -89,6 +89,14 @@ final class ApplicationTest extends TestCase
         $this->assertSame('My Project', $app->setName('My Project')->getName());
     }
 
+    public function testGettingCredentialsWithAnInvalidProviderGeneratesInvalidConfigurationException(): void
+    {
+        $app = new Application(new Environment([]), $this->createMock(Request::class));
+        $app->setFactoryFunction(Database::class, fn () => $app);
+        $this->expectException(InvalidConfigurationException::class);
+        $app->getDatabase();
+    }
+
     public function testGettingCredentialsWithoutAConfiguredProviderGeneratesInvalidConfigurationException(): void
     {
         $app = new Application(new Environment([]), $this->createMock(Request::class));
