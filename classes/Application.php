@@ -43,9 +43,9 @@ class Application extends LoggerAware
         $this->setFactoryFunction(EmitterInterface::class, fn () => new SapiEmitter());
     }
 
-    public function generateErrorResponse(string $message, int $code): ResponseInterface
+    public function generateErrorResponse($content, int $code): ResponseInterface
     {
-        return new JsonResponse(['message' => $message], $code);
+        return new JsonResponse($content, $code);
     }
 
     /**

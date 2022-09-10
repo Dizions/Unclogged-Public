@@ -41,6 +41,6 @@ final class HttpExceptionTest extends TestCase
     public function testResponseHasCorrectContent(): void
     {
         $response = (new HttpException($this->createEmptyApplication(), 'the message', 400))->getResponse();
-        $this->assertSame('{"message":"the message"}', (string)$response->getBody());
+        $this->assertSame('"the message"', (string)$response->getBody());
     }
 }
