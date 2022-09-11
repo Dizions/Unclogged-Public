@@ -17,6 +17,12 @@ final class HttpUnauthorizedExceptionTest extends TestCase
         $this->assertStringContainsString('the message', (string)$exception->getResponse()->getBody());
     }
 
+    public function testResponseHasExpectedStatusCode(): void
+    {
+        $exception = new HttpUnauthorizedException($this->createEmptyApplication(), '');
+        $this->assertSame(401, $exception->getResponse()->getStatusCode());
+    }
+
     public function testResponseIncludesWwwAuthenticateHeader(): void
     {
         $exception = new HttpUnauthorizedException($this->createEmptyApplication(), '');
