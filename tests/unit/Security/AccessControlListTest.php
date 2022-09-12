@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Security;
 
-use PHPUnit\Framework\TestCase;
+use Dizions\Unclogged\TestCase;
 
 /** @covers Dizions\Unclogged\Security\AccessControlList */
 class AccessControlListTest extends TestCase
@@ -23,11 +23,9 @@ class AccessControlListTest extends TestCase
     }
 
     /** @dataProvider validAclJsonProvider */
-    public function testAclsCanBeCorrectlyConvertedBackToJsonAfterParsing(string $json): void
+    public function testAclsCanBeCorrectlyConvertedBackToJsonAfterParsing(string $json, string $normalised = null): void
     {
-        $acl = new AccessControlList($json);
-        $newJson = $acl->toJson();
-        $this->assertSame($newJson, (new AccessControlList($newJson))->toJson());
+        $this->assertSame($this->normaliseJson($normalised ?? $json), (new AccessControlList($json))->toJson());
     }
 
     /** @dataProvider invalidAclJsonProvider */
@@ -93,8 +91,11 @@ class AccessControlListTest extends TestCase
             [AccessControlList::EMPTY_ACL],
             ['{"version": 1, "allow": "*"}'],
             ['{"version": 1, "allow": "*", "scope": {"clientId": 1}}'],
-            ['{"version": 1, "allow": [{"service": "*", "action": "*"}]}'],
-            ['{"version": 1, "allow": [{"service": "*", "action": "*"}, {"service": "foo", "action": "bar"}]}'],
+            ['{"version": 1, "allow": [{"service": "*", "action": "*"}]}', '{"version": 1, "allow": "*"}'],
+            [
+                '{"version": 1, "allow": [{"service": "*", "action": "*"}, {"service": "foo", "action": "bar"}]}',
+                '{"version": 1, "allow": "*"}',
+            ],
             ['{"version": 1, "allow": [{"service": "foo", "action": "*", "resources": "*"}]}'],
             ['{"version": 1, "allow": [{"service": "foo", "action": "*", "resources": [{"type": "key", "id": 1}]}]}'],
             ['{"version": 1, "allow": [{"service": "foo", "action": "*", "resources": [{"type": "key", "id": "*"}]}]}'],

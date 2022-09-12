@@ -50,4 +50,12 @@ abstract class TestCase extends BaseTestCase
     {
         return preg_replace(['/\(\s+/', '/\s+\)/', '/\s+/'], ['(', ')', ' '], $sql);
     }
+
+    protected function normaliseJson(string $in): string
+    {
+        return json_encode(
+            json_decode($in, true, 512, JSON_THROW_ON_ERROR),
+            JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+        );
+    }
 }

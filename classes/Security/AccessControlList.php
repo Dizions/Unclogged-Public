@@ -193,7 +193,11 @@ class AccessControlList
                 ];
             }
         }
-        return json_encode(['version' => 1, 'allow' => $this->minifyAllow($allow)]);
+        $acl = ['version' => 1, 'allow' => $this->minifyAllow($allow)];
+        if (!empty($this->scope)) {
+            $acl['scope'] = $this->scope;
+        }
+        return json_encode($acl, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
     }
 
     private function addMinifiedAllowAce(stdClass $ace): self
