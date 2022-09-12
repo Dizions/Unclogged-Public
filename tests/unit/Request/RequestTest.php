@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Request;
 
-use Laminas\Diactoros\ServerRequestFactory;
+use Dizions\Unclogged\Errors\HttpBadRequestException;
 use Dizions\Unclogged\TestCase;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\StreamFactory;
 
 /** @covers Dizions\Unclogged\Request\Request */
 final class RequestTest extends TestCase
@@ -40,5 +42,113 @@ final class RequestTest extends TestCase
             '::1',
             (new Request(ServerRequestFactory::fromGlobals(['REMOTE_ADDR' => '::1'])))->getRemoteAddress()
         );
+    }
+
+    public function testConflictingParametersInGetAndPostAreDisallowed(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request($factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['a' => '2']));
+        $this->expectException(HttpBadRequestException::class);
+        $request->getAllParams();
+    }
+
+    public function testRepeatedParametersInGetAndPostAreAllowed(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request($factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['a' => '1']));
+        $this->assertSame(['a' => '1'], $request->getAllParams());
+    }
+
+    public function testParametersAreReadFromQueryStringAndBody(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request($factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['b' => '2']));
+        $this->assertSame(['a' => '1', 'b' => '2'], $request->getAllParams());
+    }
+
+    public function testMissingJsonInBodyIsReturnedAsNull(): void
+    {
+        $factory = new ServerRequestFactory();
+        $request = new Request($factory->createServerRequest('POST', ''));
+        $this->assertNull($request->getJsonParams());
+    }
+
+    public function testBodyMayConsistOfJsonEncodedInt(): void
+    {
+        $factory = new ServerRequestFactory();
+        $body = (new StreamFactory())->createStream('1');
+        $request = new Request($factory->createServerRequest('POST', '')->withBody($body));
+        $this->assertSame(1, $request->getJsonParams());
+    }
+
+    public function testBodyMayConsistOfJsonEncodedString(): void
+    {
+        $factory = new ServerRequestFactory();
+        $body = (new StreamFactory())->createStream('"a"');
+        $request = new Request($factory->createServerRequest('POST', '')->withBody($body));
+        $this->assertSame('a', $request->getJsonParams());
+    }
+
+    public function testInvalidJsonInBodyIsReturnedAsNull(): void
+    {
+        $factory = new ServerRequestFactory();
+        $body = (new StreamFactory())->createStream('{');
+        $request = new Request($factory->createServerRequest('POST', '')->withBody($body));
+        $this->assertNull($request->getJsonParams());
+    }
+
+    public function testJsonEncodedBodyParametersMayBeEmpty(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        $request = new Request($factory->createServerRequest('POST', '/?a=1', $server));
+        $this->assertSame([], $request->getBodyParams());
+    }
+
+    public function testJsonEncodedBodyParametersMayBeArray(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        $body = (new StreamFactory())->createStream('{"foo": "bar", "bar": 1}');
+        $request = new Request($factory->createServerRequest('POST', '/?a=1', $server)->withBody($body));
+        $this->assertSame(['foo' => 'bar', 'bar' => 1], $request->getBodyParams());
+    }
+
+    public function testJsonEncodedBodyParametersMustBeArrayIfProvided(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        $body = (new StreamFactory())->createStream('1');
+        $request = new Request($factory->createServerRequest('POST', '/?a=1', $server)->withBody($body));
+        $this->expectException(HttpBadRequestException::class);
+        $request->getBodyParams();
+    }
+
+    public function testMissingContentTypeIsIgnoredWhenThereIsNoBodyToDecode(): void
+    {
+        $factory = new ServerRequestFactory();
+        $request = new Request($factory->createServerRequest('POST', '/?a=1'));
+        $this->assertSame([], $request->getBodyParams());
+    }
+
+    public function testMissingContentTypeIsRejectedWhenThereIsBodyContentToDecode(): void
+    {
+        $factory = new ServerRequestFactory();
+        $body = (new StreamFactory())->createStream('x');
+        $request = new Request($factory->createServerRequest('POST', '/?a=1')->withBody($body));
+        $this->expectException(UnknownContentTypeException::class);
+        $request->getBodyParams();
+    }
+
+    public function testUnknownContentTypeIsRejected(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'unknown'];
+        $request = new Request($factory->createServerRequest('POST', '/?a=1', $server));
+        $this->expectException(UnknownContentTypeException::class);
+        $request->getBodyParams();
     }
 }
