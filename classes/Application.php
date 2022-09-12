@@ -8,6 +8,7 @@ use Dizions\Unclogged\Database\Database;
 use Dizions\Unclogged\Errors\ErrorHandler;
 use Dizions\Unclogged\Errors\HttpUnauthorizedException;
 use Dizions\Unclogged\Logger\LoggerAware;
+use Dizions\Unclogged\Request\ParameterValidator;
 use Dizions\Unclogged\Request\Request;
 use Dizions\Unclogged\Security\{CredentialsInterface, CredentialsValidator};
 use Dizions\Unclogged\Security\{InvalidCredentialsException, MissingCredentialsException};
@@ -91,6 +92,11 @@ class Application extends LoggerAware
     {
         return $this->name ??= $this->environment->get('APPLICATION_NAME') ??
             substr(strrchr(get_class($this), '\\'), 1); // Default to short class name
+    }
+
+    public function getParameterValidator(): ParameterValidator
+    {
+        return new ParameterValidator($this->request);
     }
 
     public function getRequest(): Request

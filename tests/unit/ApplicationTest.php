@@ -7,6 +7,7 @@ namespace Dizions\Unclogged;
 use Dizions\Unclogged\Database\Database;
 use Dizions\Unclogged\Errors\ErrorHandler;
 use Dizions\Unclogged\Errors\HttpUnauthorizedException;
+use Dizions\Unclogged\Request\ParameterValidator;
 use Dizions\Unclogged\Request\Request;
 use Dizions\Unclogged\Security\AlwaysInvalidCredentials;
 use Dizions\Unclogged\Security\AlwaysMissingCredentials;
@@ -46,6 +47,12 @@ final class ApplicationTest extends TestCase
     {
         $app = new Application(new Environment([]), $this->createMock(Request::class));
         $this->assertInstanceOf(EmitterInterface::class, $app->getResponseEmitter());
+    }
+
+    public function testParameterValidatorCanBeRetrieved(): void
+    {
+        $app = new Application(new Environment([]), $this->createMock(Request::class));
+        $this->assertInstanceOf(ParameterValidator::class, $app->getParameterValidator());
     }
 
     public function testLoggerCanBeRetrieved(): void
