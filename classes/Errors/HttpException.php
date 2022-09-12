@@ -6,7 +6,6 @@ namespace Dizions\Unclogged\Errors;
 
 use Exception;
 use Psr\Http\Message\ResponseInterface;
-use Throwable;
 use Dizions\Unclogged\Application;
 
 /**
@@ -17,21 +16,8 @@ use Dizions\Unclogged\Application;
  */
 class HttpException extends Exception
 {
-    private Application $application;
-
-    public function __construct(Application $app, string $messageForUser, int $statusCode, Throwable $previous = null)
+    public function getResponse(Application $app): ResponseInterface
     {
-        $this->application = $app;
-        parent::__construct($messageForUser, $statusCode, $previous);
-    }
-
-    public function getResponse(): ResponseInterface
-    {
-        return $this->getApplication()->generateErrorResponse($this->getMessage(), $this->getCode());
-    }
-
-    protected function getApplication(): Application
-    {
-        return $this->application;
+        return $app->generateErrorResponse($this->getMessage(), $this->getCode());
     }
 }

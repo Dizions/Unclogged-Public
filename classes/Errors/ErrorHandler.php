@@ -53,7 +53,7 @@ class ErrorHandler extends LoggerAware
     public function except(Throwable $exception): void
     {
         if ($exception instanceof HttpException) {
-            $this->application->getResponseEmitter()->emit($exception->getResponse());
+            $this->application->getResponseEmitter()->emit($exception->getResponse($this->application));
             return;
         }
         $message = 'Uncaught {exception}: "{message}" in {file}:{line}';

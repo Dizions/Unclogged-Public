@@ -12,16 +12,15 @@ use Dizions\Unclogged\Security\Password\NullPasswordValidator;
 
 class HttpUnauthorizedException extends HttpException
 {
-    public function __construct(Application $app, string $messageForUser, Throwable $previous = null)
+    public function __construct(string $messageForUser, Throwable $previous = null)
     {
-        parent::__construct($app, $messageForUser, 401, $previous);
+        parent::__construct($messageForUser, 401, $previous);
     }
 
-    public function getResponse(): ResponseInterface
+    public function getResponse(Application $app): ResponseInterface
     {
-        $app = $this->getApplication();
         $config = new KeyCredentialsConfiguration($app->getEnvironment(), $app->getName(), new NullPasswordValidator());
         $authScheme = $config->getAuthenticationScheme();
-        return parent::getResponse()->withAddedHeader('WWW-Authenticate', $authScheme);
+        return parent::getResponse($app)->withAddedHeader('WWW-Authenticate', $authScheme);
     }
 }

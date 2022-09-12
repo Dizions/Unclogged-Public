@@ -16,7 +16,7 @@ final class HttpExceptionTest extends TestCase
     {
         $this->assertInstanceOf(
             ResponseInterface::class,
-            (new HttpException($this->createEmptyApplication(), '', 500))->getResponse()
+            (new HttpException('', 500))->getResponse($this->createEmptyApplication())
         );
     }
 
@@ -24,23 +24,23 @@ final class HttpExceptionTest extends TestCase
     {
         $this->assertSame(
             400,
-            (new HttpException($this->createEmptyApplication(), '', 400))->getResponse()->getStatusCode()
+            (new HttpException('', 400))->getResponse($this->createEmptyApplication())->getStatusCode()
         );
         $this->assertSame(
             500,
-            (new HttpException($this->createEmptyApplication(), '', 500))->getResponse()->getStatusCode()
+            (new HttpException('', 500))->getResponse($this->createEmptyApplication())->getStatusCode()
         );
     }
 
     public function testResponseHasCorrectContentType(): void
     {
-        $response = (new HttpException($this->createEmptyApplication(), 'the message', 400))->getResponse();
+        $response = (new HttpException('the message', 400))->getResponse($this->createEmptyApplication());
         $this->assertSame(['application/json'], $response->getHeader('content-type'));
     }
 
     public function testResponseHasCorrectContent(): void
     {
-        $response = (new HttpException($this->createEmptyApplication(), 'the message', 400))->getResponse();
+        $response = (new HttpException('the message', 400))->getResponse($this->createEmptyApplication());
         $this->assertSame('"the message"', (string)$response->getBody());
     }
 }

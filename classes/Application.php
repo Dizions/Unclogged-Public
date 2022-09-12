@@ -61,9 +61,9 @@ class Application extends LoggerAware
             return $this->credentials ??=
                 $this->createNew(CredentialsValidator::class)->authenticate($this->getRequest());
         } catch (InvalidCredentialsException $e) {
-            throw new HttpUnauthorizedException($this, 'Invalid credentials provided: ' . $e->getMessage(), $e);
+            throw new HttpUnauthorizedException('Invalid credentials provided: ' . $e->getMessage(), $e);
         } catch (MissingCredentialsException $e) {
-            throw new HttpUnauthorizedException($this, 'No credentials provided', $e);
+            throw new HttpUnauthorizedException('No credentials provided', $e);
         }
     }
 
