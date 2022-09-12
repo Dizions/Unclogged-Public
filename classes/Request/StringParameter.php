@@ -10,4 +10,10 @@ class StringParameter extends Parameter
     {
         return (string)parent::get();
     }
+
+    public function maxLength(int $length): self
+    {
+        $this->addValidator(fn ($x) => strlen($x) <= $length);
+        return $this;
+    }
 }
