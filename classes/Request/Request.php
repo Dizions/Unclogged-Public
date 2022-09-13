@@ -55,27 +55,11 @@ class Request
     public function getBodyParams(): array
     {
         $contentType = $this->serverRequest->getServerParams()['CONTENT_TYPE'] ?? '';
-        switch ($contentType) {
-            case 'application/json':
-                $decodedBody = $this->getJsonParams();
-                if ($decodedBody === null) {
-                    return [];
-                }
-                if (is_array($decodedBody)) {
-                    return $decodedBody;
-                }
-                throw new HttpBadRequestException('Expected JSON-encoded array in request body');
-            case 'application/x-www-form-urlencoded':
-            case 'multipart/form-data':
-                return $this->serverRequest->getParsedBody();
-            case '':
-                if ((string)$this->serverRequest->getBody() || $this->serverRequest->getParsedBody()) {
-                    throw new UnknownContentTypeException('No content-type specified for request body');
-                }
-                return [];
-            default:
-                throw new UnknownContentTypeException("Unknown content-type: $contentType");
+        if (empty($contentType)) {
+            $this->assertBodyIsEmpty();
+            return [];
         }
+        return $this->decodeBodyParams($contentType);
     }
 
     /**
@@ -126,5 +110,36 @@ class Request
     public function getServerRequest(): ServerRequestInterface
     {
         return $this->serverRequest;
+    }
+
+    private function assertBodyIsEmpty(): void
+    {
+        if ((string)$this->serverRequest->getBody() || $this->serverRequest->getParsedBody()) {
+            throw new UnknownContentTypeException('No content-type specified for request body');
+        }
+    }
+
+    private function decodeBodyParams(string $contentType): array
+    {
+        switch ($contentType) {
+            case 'application/json':
+                return $this->getJsonArray();
+            case 'application/x-www-form-urlencoded':
+            case 'multipart/form-data':
+                return $this->serverRequest->getParsedBody();
+        }
+        throw new UnknownContentTypeException("Unknown content-type: $contentType");
+    }
+
+    private function getJsonArray(): array
+    {
+        $decodedBody = $this->getJsonParams();
+        if ($decodedBody === null) {
+            return [];
+        }
+        if (is_array($decodedBody)) {
+            return $decodedBody;
+        }
+        throw new HttpBadRequestException('Expected JSON-encoded array in request body');
     }
 }

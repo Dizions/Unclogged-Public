@@ -130,7 +130,6 @@ abstract class Parameter
             case self::FROM_QUERY_STRING:
                 return $this->getRequest()->getQueryParams();
             case self::FROM_ANYWHERE:
-            default:
                 return $this->getRequest()->getAllParams();
         }
     }
