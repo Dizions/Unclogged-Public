@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Request;
 
+use DateTimeInterface;
 use Dizions\Unclogged\TestCase;
 
 /**
@@ -22,6 +23,52 @@ final class ParameterValidatorTest extends TestCase
         $request = $this->createMock(Request::class);
         $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => 1]));
         $this->assertTrue((new ParameterValidator($request))->getBoolean('a'));
+    }
+
+    public function testDateTimeParameterCanBeRetrieved(): void
+    {
+        $request = $this->createMock(Request::class);
+        $this->assertInstanceOf(DateTimeParameter::class, (new ParameterValidator($request))->datetime('a'));
+    }
+
+    public function testDateTimeParameterCanBeRetrievedDirectly(): void
+    {
+        $request = $this->createMock(Request::class);
+        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => '2000-01-01']));
+        $this->assertInstanceOf(DateTimeInterface::class, (new ParameterValidator($request))->getDateTime('a'));
+    }
+
+    public function testDateTimeParameterCanBeRetrievedDirectlyAsString(): void
+    {
+        $request = $this->createMock(Request::class);
+        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => '2000-01-01']));
+        $this->assertIsString((new ParameterValidator($request))->getDateTimeString('a'));
+    }
+
+    public function testIntParameterCanBeRetrieved(): void
+    {
+        $request = $this->createMock(Request::class);
+        $this->assertInstanceOf(IntParameter::class, (new ParameterValidator($request))->int('a'));
+    }
+
+    public function testIntParameterCanBeRetrievedDirectly(): void
+    {
+        $request = $this->createMock(Request::class);
+        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => 1]));
+        $this->assertSame(1, (new ParameterValidator($request))->getInt('a'));
+    }
+
+    public function testIpAddressParameterCanBeRetrieved(): void
+    {
+        $request = $this->createMock(Request::class);
+        $this->assertInstanceOf(IpAddressParameter::class, (new ParameterValidator($request))->ipAddress('a'));
+    }
+
+    public function testIpAddressParameterCanBeRetrievedDirectly(): void
+    {
+        $request = $this->createMock(Request::class);
+        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => '::1']));
+        $this->assertSame('::1', (new ParameterValidator($request))->getIpAddress('a'));
     }
 
     public function testStringParameterCanBeRetrieved(): void
