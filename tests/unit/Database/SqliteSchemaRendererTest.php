@@ -39,6 +39,12 @@ final class SqliteSchemaRendererTest extends TestCase
         );
     }
 
+    public function testIdentifierIsQuotedCorrectly(): void
+    {
+        $this->assertSame('`x`', SqliteSchemaRenderer::quoteIdentifier('x'));
+        $this->assertSame('`x```', SqliteSchemaRenderer::quoteIdentifier('x`'));
+    }
+
     public function testReferencesIsRenderedAsSeparateForeignKeyConstraint(): void
     {
         $column = (new ColumnSchema('col'))->setType(ColumnType::int())->setReferences('other', 'other_id');

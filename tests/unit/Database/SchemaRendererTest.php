@@ -64,6 +64,10 @@ final class SchemaRendererTest extends TestCase
             {
                 return [];
             }
+            public static function quoteIdentifier(string $identifier): string
+            {
+                return '';
+            }
             protected function renderAutoIncrement(bool $autoincrement): string
             {
                 return '';

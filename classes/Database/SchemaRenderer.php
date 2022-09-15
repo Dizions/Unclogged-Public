@@ -8,12 +8,6 @@ abstract class SchemaRenderer implements SchemaRendererInterface
 {
     private TableSchema $schema;
 
-    /**
-     * Generate the "CREATE TABLE" statement, and any additional statements that are needed after
-     * it (eg "CREATE INDEX" statements).
-     * @return array
-     */
-    abstract public function renderCreateTable(): array;
     abstract protected function renderAutoIncrement(bool $autoincrement): string;
     abstract protected function renderComment(string $comment): string;
     /**

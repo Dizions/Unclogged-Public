@@ -51,6 +51,12 @@ final class MysqlSchemaRendererTest extends TestCase
         );
     }
 
+    public function testIdentifierIsQuotedCorrectly(): void
+    {
+        $this->assertSame('`x`', MysqlSchemaRenderer::quoteIdentifier('x'));
+        $this->assertSame('`x```', MysqlSchemaRenderer::quoteIdentifier('x`'));
+    }
+
     public function testLengthCanBeRendered(): void
     {
         $column = (new ColumnSchema('col'))->setType(ColumnType::char(10));

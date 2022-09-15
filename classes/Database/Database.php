@@ -10,6 +10,8 @@ class Database extends PDO
 {
     private const RENDERERS = ['mysql' => MysqlSchemaRenderer::class, 'sqlite' => SqliteSchemaRenderer::class];
     private ConnectionParameters $parameters;
+    /** @var class-string<SchemaRendererInterface>  */
+    private string $rendererClass;
 
     public function __construct(ConnectionParameters $parameters)
     {
@@ -39,11 +41,21 @@ class Database extends PDO
      */
     public function createTable(TableSchema $schema): self
     {
-        $driver = $this->getConnectionParameters()->getDriver();
-        $rendererClass = self::RENDERERS[$driver];
+        $rendererClass = $this->getRendererClass();
         foreach ((new $rendererClass($schema))->renderCreateTable() as $sql) {
             $this->exec($sql);
         }
         return $this;
+    }
+
+    public function quoteIdentifier(string $identifier): string
+    {
+        return $this->getRendererClass()::quoteIdentifier($identifier);
+    }
+
+    /** @return class-string<SchemaRendererInterface>  */
+    private function getRendererClass(): string
+    {
+        return $this->rendererClass ??= self::RENDERERS[$this->getConnectionParameters()->getDriver()];
     }
 }

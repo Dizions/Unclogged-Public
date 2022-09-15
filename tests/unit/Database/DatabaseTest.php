@@ -41,6 +41,12 @@ final class DatabaseTest extends TestCase
         );
     }
 
+    public function testIdentifiersCanBeQuoted(): void
+    {
+        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
+        $this->assertIsString($db->quoteIdentifier('x'));
+    }
+
     public function testTableCanBeCreated(): void
     {
         $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));

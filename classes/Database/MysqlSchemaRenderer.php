@@ -6,6 +6,17 @@ namespace Dizions\Unclogged\Database;
 
 class MysqlSchemaRenderer extends SchemaRenderer
 {
+    public function renderCreateTable(): array
+    {
+        $definition = $this->renderTableSchema();
+        return ["CREATE TABLE IF NOT EXISTS {$definition} ENGINE=InnoDB"];
+    }
+
+    public static function quoteIdentifier(string $identifier): string
+    {
+        return '`' . str_replace('`', '``', $identifier) . '`';
+    }
+
     protected function renderAutoIncrement(bool $autoincrement): string
     {
         return $autoincrement ? 'AUTO_INCREMENT' : '';
@@ -14,12 +25,6 @@ class MysqlSchemaRenderer extends SchemaRenderer
     protected function renderComment(string $comment): string
     {
         return $comment ? "COMMENT `$comment`" : '';
-    }
-
-    public function renderCreateTable(): array
-    {
-        $definition = $this->renderTableSchema();
-        return ["CREATE TABLE IF NOT EXISTS {$definition} ENGINE=InnoDB"];
     }
 
     protected function renderReferences(array $references): string

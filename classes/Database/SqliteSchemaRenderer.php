@@ -6,14 +6,6 @@ namespace Dizions\Unclogged\Database;
 
 class SqliteSchemaRenderer extends SchemaRenderer
 {
-    protected function renderAutoIncrement(bool $autoincrement): string
-    {
-        if ($autoincrement) {
-            throw new InvalidTableSchemaException('sqlite does not support autoincrementing non-primary keys');
-        }
-        return '';
-    }
-
     public function renderCreateTable(): array
     {
         $definition = $this->renderTableSchema();
@@ -22,6 +14,19 @@ class SqliteSchemaRenderer extends SchemaRenderer
             "CREATE TABLE IF NOT EXISTS {$definition}",
             ...$indexes,
         ];
+    }
+
+    public static function quoteIdentifier(string $identifier): string
+    {
+        return '`' . str_replace('`', '``', $identifier) . '`';
+    }
+
+    protected function renderAutoIncrement(bool $autoincrement): string
+    {
+        if ($autoincrement) {
+            throw new InvalidTableSchemaException('sqlite does not support autoincrementing non-primary keys');
+        }
+        return '';
     }
 
     protected function renderColumn(ColumnSchema $column): string
