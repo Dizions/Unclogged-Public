@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Database;
+namespace Dizions\Unclogged\Database\Schema;
 
 use Dizions\Unclogged\TestCase;
 
 /**
- * @covers Dizions\Unclogged\Database\ColumnSchema
+ * @covers Dizions\Unclogged\Database\Schema\ColumnSchema
  */
 final class ColumnSchemaTest extends TestCase
 {

@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
 use Dizions\Unclogged\Database\BasicConnectionParameters;
-use Dizions\Unclogged\Database\ColumnSchema;
 use Dizions\Unclogged\Database\Database;
-use Dizions\Unclogged\Database\TableSchema;
+use Dizions\Unclogged\Database\Schema\{ColumnSchema, TableSchema};
 use Dizions\Unclogged\Request\Request;
-use Dizions\Unclogged\Setup\DefaultEnvironment;
-use Dizions\Unclogged\Setup\Environment;
+use Dizions\Unclogged\Setup\{DefaultEnvironment, Environment};
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {

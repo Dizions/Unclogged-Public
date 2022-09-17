@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Database;
+namespace Dizions\Unclogged\Database\Schema;
 
 interface SchemaRendererInterface
 {

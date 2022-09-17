@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database;
 
+use Dizions\Unclogged\Database\Schema\MysqlSchemaRenderer;
+use Dizions\Unclogged\Database\Schema\SqliteSchemaRenderer;
+use Dizions\Unclogged\Database\Schema\TableSchema;
 use PDO;
 
 class Database extends PDO

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database;
 
-use PDO;
+use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, TableSchema};
 use Dizions\Unclogged\TestCase;
+use PDO;
 
 /**
  * @covers Dizions\Unclogged\Database\Database

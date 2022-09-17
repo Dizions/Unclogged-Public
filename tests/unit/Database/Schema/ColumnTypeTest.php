@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Database;
+namespace Dizions\Unclogged\Database\Schema;
 
 use TypeError;
 use Dizions\Unclogged\TestCase;
 
 /**
- * @covers Dizions\Unclogged\Database\ColumnType
+ * @covers Dizions\Unclogged\Database\Schema\ColumnType
  */
 final class ColumnTypeTest extends TestCase
 {

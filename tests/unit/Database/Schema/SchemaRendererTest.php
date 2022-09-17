@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Database;
+namespace Dizions\Unclogged\Database\Schema;
 
 use Dizions\Unclogged\TestCase;
 
 /**
- * @covers Dizions\Unclogged\Database\SchemaRenderer
+ * @covers Dizions\Unclogged\Database\Schema\SchemaRenderer
  */
 final class SchemaRendererTest extends TestCase
 {

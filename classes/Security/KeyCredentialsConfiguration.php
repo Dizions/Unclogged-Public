@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Security;
 
-use Dizions\Unclogged\Database\ColumnSchema;
-use Dizions\Unclogged\Database\ColumnType;
-use Dizions\Unclogged\Database\TableSchema;
+use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, TableSchema};
 use Dizions\Unclogged\Security\Password\PasswordValidator;
 use Dizions\Unclogged\Setup\Environment;
 
