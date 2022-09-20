@@ -36,7 +36,9 @@ final class SqlStringTest extends TestCase
     /** @dataProvider stringProvider */
     public function testStringCanBeRetrievedUnchanged(string $in): void
     {
+        $this->assertSame($in, (new SqlString($in))->getRaw());
         $renderer = $this->createMock(SqlRendererInterface::class);
+        $renderer->expects($this->once())->method('quoteString')->willReturnArgument(0);
         $this->assertSame($in, (new SqlString($in))->render($renderer));
     }
 

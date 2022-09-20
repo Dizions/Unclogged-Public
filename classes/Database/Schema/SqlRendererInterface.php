@@ -13,4 +13,5 @@ interface SqlRendererInterface
      */
     public function renderCreateTable(TableSchema $schema): array;
     public function quoteIdentifier(string $identifier): string;
+    public function quoteString(string $string): string;
 }

@@ -9,5 +9,6 @@ use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
 interface SqlStringInterface
 {
     public function canUsePlaceholderInPreparedStatement(): bool;
+    public function getRaw(): string;
     public function render(SqlRendererInterface $renderer): string;
 }

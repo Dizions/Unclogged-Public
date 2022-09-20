@@ -20,13 +20,13 @@ class SqlString implements SqlStringInterface
         return true;
     }
 
-    public function render(SqlRendererInterface $renderer): string
+    public function getRaw(): string
     {
         return $this->raw;
     }
 
-    protected function getRaw(): string
+    public function render(SqlRendererInterface $renderer): string
     {
-        return $this->raw;
+        return $renderer->quoteString($this->raw);
     }
 }

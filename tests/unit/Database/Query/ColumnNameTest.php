@@ -13,7 +13,7 @@ use Dizions\Unclogged\TestCase;
 final class ColumnNameTest extends TestCase
 {
     /** @dataProvider validStringsProvider */
-    public function testCanBeRenderedString(string $in): void
+    public function testCanBeRenderedToString(string $in): void
     {
         $renderer = $this->createMock(SqlRendererInterface::class);
         $this->assertIsString((new ColumnName($in))->render($renderer));

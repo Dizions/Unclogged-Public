@@ -79,14 +79,7 @@ abstract class SqlRenderer implements SqlRendererInterface
 
     final protected function renderDefault(?SqlStringInterface $default): string
     {
-        if ($default === null) {
-            return '';
-        }
-        $string = $default->render($this);
-        if ($default->canUsePlaceholderInPreparedStatement()) {
-            $string = $this->quoteString($string);
-        }
-        return "DEFAULT $string";
+        return $default ? "DEFAULT {$default->render($this)}" : '';
     }
 
     final protected function renderNullable(bool $nullable): string

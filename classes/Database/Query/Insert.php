@@ -36,7 +36,7 @@ class Insert extends Query
             }
             if ($value->canUsePlaceholderInPreparedStatement()) {
                 $values[] = '?';
-                $parameters[] = $value->render($renderer);
+                $parameters[] = $value->getRaw();
             } else {
                 $values[] = $value->render($renderer);
             }
