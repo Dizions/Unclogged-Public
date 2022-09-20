@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Schema;
 
+use Dizions\Unclogged\Database\Query\RawSqlString;
+use Dizions\Unclogged\Database\Query\SqlString;
+use Dizions\Unclogged\Database\Query\SqlStringInterface;
 use TypeError;
 
 /**
@@ -29,7 +32,7 @@ class ColumnSchema
     private string $name;
     private bool $autoincrement = false;
     private string $comment = '';
-    private ?string $default = null;
+    private ?SqlStringInterface $default = null;
     private array $references = [];
     private bool $nullable = false;
     private ColumnType $type;
@@ -76,7 +79,7 @@ class ColumnSchema
         return $this->comment;
     }
 
-    public function getDefault(): ?string
+    public function getDefault(): ?SqlStringInterface
     {
         return $this->default;
     }
@@ -113,9 +116,19 @@ class ColumnSchema
         return $this;
     }
 
-    public function setDefault(string $default): self
+    /**
+     * @param string|SqlStringInterface|null $default
+     * @return ColumnSchema $this
+     */
+    public function setDefault($default): self
     {
-        $this->default = $default;
+        if ($default === null) {
+            $this->default = new RawSqlString('NULL');
+        } elseif ($default instanceof SqlStringInterface) {
+            $this->default = $default;
+        } else {
+            $this->default = new SqlString($default);
+        }
         return $this;
     }
 

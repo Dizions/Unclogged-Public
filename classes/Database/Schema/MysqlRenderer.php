@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Schema;
 
-class MysqlSchemaRenderer extends SchemaRenderer
+class MysqlRenderer extends SqlRenderer
 {
-    public function renderCreateTable(): array
+    public function renderCreateTable(TableSchema $schema): array
     {
-        $definition = $this->renderTableSchema();
+        $definition = $this->renderTableSchema($schema);
         return ["CREATE TABLE IF NOT EXISTS {$definition} ENGINE=InnoDB"];
-    }
-
-    public static function quoteIdentifier(string $identifier): string
-    {
-        return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
     protected function renderAutoIncrement(bool $autoincrement): string

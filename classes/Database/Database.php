@@ -6,18 +6,18 @@ namespace Dizions\Unclogged\Database;
 
 use Dizions\Unclogged\Database\Query\Query;
 use Dizions\Unclogged\Database\Query\QueryFailureException;
-use Dizions\Unclogged\Database\Schema\MysqlSchemaRenderer;
-use Dizions\Unclogged\Database\Schema\SqliteSchemaRenderer;
+use Dizions\Unclogged\Database\Schema\MysqlRenderer;
+use Dizions\Unclogged\Database\Schema\SqliteRenderer;
+use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
 use Dizions\Unclogged\Database\Schema\TableSchema;
 use PDO;
 use PDOException;
 
 class Database extends PDO
 {
-    private const RENDERERS = ['mysql' => MysqlSchemaRenderer::class, 'sqlite' => SqliteSchemaRenderer::class];
+    private const RENDERERS = ['mysql' => MysqlRenderer::class, 'sqlite' => SqliteRenderer::class];
     private ConnectionParameters $parameters;
-    /** @var class-string<SchemaRendererInterface>  */
-    private string $rendererClass;
+    private SqlRendererInterface $renderer;
 
     public function __construct(ConnectionParameters $parameters)
     {
@@ -39,6 +39,15 @@ class Database extends PDO
         return $this->parameters;
     }
 
+    public function getRenderer(): SqlRendererInterface
+    {
+        if (!isset($this->renderer)) {
+            $rendererClass = self::RENDERERS[$this->getConnectionParameters()->getDriver()];
+            $this->renderer = new $rendererClass();
+        }
+        return $this->renderer;
+    }
+
     /**
      * Create the table with the provided schema.
      *
@@ -47,8 +56,7 @@ class Database extends PDO
      */
     public function createTable(TableSchema $schema): self
     {
-        $rendererClass = $this->getRendererClass();
-        foreach ((new $rendererClass($schema))->renderCreateTable() as $sql) {
+        foreach ($this->getRenderer()->renderCreateTable($schema) as $sql) {
             $this->exec($sql);
         }
         return $this;
@@ -77,12 +85,6 @@ class Database extends PDO
 
     public function quoteIdentifier(string $identifier): string
     {
-        return $this->getRendererClass()::quoteIdentifier($identifier);
-    }
-
-    /** @return class-string<SchemaRendererInterface>  */
-    private function getRendererClass(): string
-    {
-        return $this->rendererClass ??= self::RENDERERS[$this->getConnectionParameters()->getDriver()];
+        return $this->getRenderer()->quoteIdentifier($identifier);
     }
 }

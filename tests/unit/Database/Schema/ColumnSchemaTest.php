@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Schema;
 
+use Dizions\Unclogged\Database\Query\RawSqlString;
+use Dizions\Unclogged\Database\Query\SqlStringInterface;
 use Dizions\Unclogged\TestCase;
 
 /**
@@ -36,9 +38,28 @@ final class ColumnSchemaTest extends TestCase
         $this->assertEmpty(ColumnSchema::new('name')->getComment());
     }
 
-    public function testDefaultCanBeSet(): void
+    public function testDefaultCanBeSetToNull(): void
     {
-        $this->assertSame('default', ColumnSchema::new('name')->setDefault('default')->getDefault());
+        $this->assertInstanceOf(
+            SqlStringInterface::class,
+            ColumnSchema::new('name')->setDefault(null)->getDefault()
+        );
+    }
+
+    public function testDefaultCanBeSetToString(): void
+    {
+        $this->assertInstanceOf(
+            SqlStringInterface::class,
+            ColumnSchema::new('name')->setDefault('default')->getDefault()
+        );
+    }
+
+    public function testDefaultCanBeSetToRawString(): void
+    {
+        $this->assertInstanceOf(
+            SqlStringInterface::class,
+            ColumnSchema::new('name')->setDefault(new RawSqlString('default'))->getDefault()
+        );
     }
 
     public function testDefaultDefaultsToEmpty(): void

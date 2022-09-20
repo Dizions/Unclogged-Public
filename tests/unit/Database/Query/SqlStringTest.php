@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Query;
 
-use Dizions\Unclogged\Database\Database;
+use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
 use Dizions\Unclogged\TestCase;
 
 /**
@@ -36,8 +36,8 @@ final class SqlStringTest extends TestCase
     /** @dataProvider stringProvider */
     public function testStringCanBeRetrievedUnchanged(string $in): void
     {
-        $db = $this->createMock(Database::class);
-        $this->assertSame($in, (new SqlString($in))->render($db));
+        $renderer = $this->createMock(SqlRendererInterface::class);
+        $this->assertSame($in, (new SqlString($in))->render($renderer));
     }
 
     public function stringProvider(): array

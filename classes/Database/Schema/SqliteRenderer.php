@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Schema;
 
-class SqliteSchemaRenderer extends SchemaRenderer
+class SqliteRenderer extends SqlRenderer
 {
-    public function renderCreateTable(): array
+    public function renderCreateTable(TableSchema $schema): array
     {
-        $definition = $this->renderTableSchema();
-        $indexes = $this->renderIndexes();
+        $definition = $this->renderTableSchema($schema);
+        $indexes = $this->renderIndexes($schema);
         return [
             "CREATE TABLE IF NOT EXISTS {$definition}",
             ...$indexes,
         ];
-    }
-
-    public static function quoteIdentifier(string $identifier): string
-    {
-        return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
     protected function renderAutoIncrement(bool $autoincrement): string
@@ -29,13 +24,13 @@ class SqliteSchemaRenderer extends SchemaRenderer
         return '';
     }
 
-    protected function renderColumn(ColumnSchema $column): string
+    protected function renderColumn(TableSchema $schema, ColumnSchema $column): string
     {
-        $primary = $this->getSchema()->getPrimary();
+        $primary = $schema->getPrimary();
         if (count($primary) == 1 && $primary[0] == $column->getName()) {
             return $this->renderColumnAsPrimaryKey($column);
         }
-        return parent::renderColumn($column);
+        return parent::renderColumn($schema, $column);
     }
 
     protected function renderComment(string $comment): string
@@ -44,27 +39,27 @@ class SqliteSchemaRenderer extends SchemaRenderer
     }
 
     /** @return string[] */
-    protected function renderConstraintsAndIndexes(): array
+    protected function renderConstraintsAndIndexes(TableSchema $schema): array
     {
         return array_merge(
-            [$this->renderPrimaryKey($this->getSchema())],
-            $this->renderUniqueConstraints($this->getSchema()),
-            $this->renderForeignKeys($this->getSchema()),
+            [$this->renderPrimaryKey($schema)],
+            $this->renderUniqueConstraints($schema),
+            $this->renderForeignKeys($schema),
         );
     }
 
-    protected function renderIndexes(): array
+    protected function renderIndexes(TableSchema $schema): array
     {
-        $table = $this->getSchema()->getName();
+        $table = $schema->getName();
         return array_map(
             fn ($i) => "CREATE INDEX IF NOT EXISTS {$i['name']} ON $table(" . implode(', ', $i['columns']) . ')',
-            $this->getSchema()->getIndexes()
+            $schema->getIndexes()
         );
     }
 
-    protected function renderPrimaryKey(): string
+    protected function renderPrimaryKey(TableSchema $schema): string
     {
-        $primary = $this->getSchema()->getPrimary();
+        $primary = $schema->getPrimary();
         if (count($primary) > 1) {
             return 'PRIMARY KEY (' . implode(', ', $primary) . ')';
         }
@@ -82,19 +77,19 @@ class SqliteSchemaRenderer extends SchemaRenderer
     }
 
     /** @return string[] */
-    protected function renderUniqueConstraints(): array
+    protected function renderUniqueConstraints(TableSchema $schema): array
     {
         return array_map(
             fn ($i) => "UNIQUE (" . implode(', ', $i['columns']) . ')',
-            $this->getSchema()->getUniqueConstraints()
+            $schema->getUniqueConstraints()
         );
     }
 
     /** @return string[] */
-    private function renderForeignKeys(): array
+    private function renderForeignKeys(TableSchema $schema): array
     {
         $keys = [];
-        foreach ($this->getSchema()->getColumns() as $column) {
+        foreach ($schema->getColumns() as $column) {
             $references = $column->getReferences();
             if ($references) {
                 [$foreignTable, $foreignColumn] = $references;
@@ -119,7 +114,9 @@ class SqliteSchemaRenderer extends SchemaRenderer
         }
         return implode(' ', array_filter([
             $name,
-            $this->renderColumnType($column->getType(), $column->getNullable(), $column->getAutoIncrement()),
+            $this->renderType($column->getType()),
+            $this->renderNullable($column->getNullable()),
+            $this->renderAutoIncrement($column->getAutoIncrement()),
             'PRIMARY KEY',
             $this->renderDefault($column->getDefault()),
             $this->renderComment($column->getComment()),

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Query;
 
-use Dizions\Unclogged\Database\Database;
+use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
 
 class SqlString implements SqlStringInterface
 {
@@ -20,7 +20,7 @@ class SqlString implements SqlStringInterface
         return true;
     }
 
-    public function render(Database $database): string
+    public function render(SqlRendererInterface $renderer): string
     {
         return $this->raw;
     }

@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Query;
 
-use Dizions\Unclogged\Database\Database;
+use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
 
 class ColumnName extends Identifier
 {
     private string $string;
 
-    public function render(Database $db): string
+    public function render(SqlRendererInterface $renderer): string
     {
         if (!isset($this->string)) {
             $raw = $this->getRaw();
             $parts = explode('.', $raw);
             switch (count($parts)) {
                 case 1:
-                    return $this->string = $db->quoteIdentifier($parts[0]);
+                    return $this->string = $renderer->quoteIdentifier($parts[0]);
                 case 2:
                     return $this->string = implode(
                         '.',
-                        [$db->quoteIdentifier($parts[0]), $db->quoteIdentifier($parts[1])]
+                        [$renderer->quoteIdentifier($parts[0]), $renderer->quoteIdentifier($parts[1])]
                     );
             }
             throw new InvalidIdentifierException("'$raw' is not a valid column name");

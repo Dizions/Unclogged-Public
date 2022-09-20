@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Query;
 
-use Dizions\Unclogged\Database\Database;
+use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
 
 class Insert extends Query
 {
@@ -23,27 +23,27 @@ class Insert extends Query
         return $this;
     }
 
-    protected function getSqlStringAndParameters(Database $database): array
+    protected function getSqlStringAndParameters(SqlRendererInterface $renderer): array
     {
         $this->assertValuesArrayIsNonEmpty($this->values);
         $columns = [];
         $values = [];
         $parameters = [];
         foreach ($this->values as $column => $value) {
-            $columns[] = (new ColumnName($column))->render($database);
+            $columns[] = (new ColumnName($column))->render($renderer);
             if (!($value instanceof SqlStringInterface)) {
                 $value = new SqlString((string)$value);
             }
             if ($value->canUsePlaceholderInPreparedStatement()) {
                 $values[] = '?';
-                $parameters[] = $value->render($database);
+                $parameters[] = $value->render($renderer);
             } else {
-                $values[] = $value->render($database);
+                $values[] = $value->render($renderer);
             }
         }
         $columnsCsv = implode(',', $columns);
         $valuesCsv = implode(',', $values);
-        return ["INSERT INTO {$this->table->render($database)} ($columnsCsv) VALUES ($valuesCsv)", $parameters];
+        return ["INSERT INTO {$this->table->render($renderer)} ($columnsCsv) VALUES ($valuesCsv)", $parameters];
     }
 
     private function assertValuesArrayIsNonEmpty(array $values): void

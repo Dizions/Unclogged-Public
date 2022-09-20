@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Query;
 
-use Dizions\Unclogged\Database\Database;
+use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
 use Dizions\Unclogged\TestCase;
 
 /**
@@ -12,10 +12,10 @@ use Dizions\Unclogged\TestCase;
  */
 final class TableNameTest extends TestCase
 {
-    public function testCanBeRenderedString(): void
+    public function testCanBeRenderedAsString(): void
     {
-        $db = $this->createMock(Database::class);
-        $this->assertIsString((new TableName('x'))->render($db));
+        $renderer = $this->createMock(SqlRendererInterface::class);
+        $this->assertIsString((new TableName('x'))->render($renderer));
     }
 
     public function testCannotBeReplacedWithPlaceholderInPreparedStatement(): void
@@ -26,10 +26,10 @@ final class TableNameTest extends TestCase
 
     public function testQuotedStringOutputIsCached()
     {
-        $db = $this->createMock(Database::class);
-        $db->expects($this->once())->method('quoteIdentifier');
+        $renderer = $this->createMock(SqlRendererInterface::class);
+        $renderer->expects($this->once())->method('quoteIdentifier');
         $columnName = new TableName('x');
-        $columnName->render($db);
-        $columnName->render($db);
+        $columnName->render($renderer);
+        $columnName->render($renderer);
     }
 }

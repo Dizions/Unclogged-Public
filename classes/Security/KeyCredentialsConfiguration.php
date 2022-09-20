@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Security;
 
+use Dizions\Unclogged\Database\Query\RawSqlString;
 use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, TableSchema};
 use Dizions\Unclogged\Security\Password\PasswordValidator;
 use Dizions\Unclogged\Setup\Environment;
@@ -60,15 +61,15 @@ class KeyCredentialsConfiguration
                 ->setComment('Surrogate key to make references more efficient'),
             ColumnSchema::char('key_key', 12, 'ascii'),
             ColumnSchema::varchar('key_secret_hash', 255, 'ascii'),
-            ColumnSchema::datetime('key_valid_after')->setDefault('CURRENT_TIMESTAMP'),
+            ColumnSchema::datetime('key_valid_after')->setDefault(new RawSqlString('CURRENT_TIMESTAMP')),
             ColumnSchema::datetime('key_valid_before')->setNullable(),
             ColumnSchema::bit('key_is_ephemeral', 1)
-                ->setDefault('false')
+                ->setDefault(new RawSqlString('false'))
                 ->setComment('Ephemeral keys cannot be changed and are automatically deleted after expiration'),
             ColumnSchema::text('key_description', 'utf8mb4'),
-            ColumnSchema::datetime('key_last_used')->setNullable()->setDefault('NULL'),
-            ColumnSchema::json('key_restrict_to_ip_addresses')->setNullable()->setDefault('NULL'),
-            ColumnSchema::json('key_acl')->setDefault("'" . AccessControlList::EMPTY_ACL . "'"),
+            ColumnSchema::datetime('key_last_used')->setNullable()->setDefault(null),
+            ColumnSchema::json('key_restrict_to_ip_addresses')->setNullable()->setDefault(null),
+            ColumnSchema::json('key_acl')->setDefault(AccessControlList::EMPTY_ACL),
         ]))->setPrimary(['key_id'])
            ->addUnique(['key_key'], 'key_unq')
            // To support 'DELETE FROM keys WHERE key_is_ephemeral = true AND key_valid_before < NOW()'
