@@ -8,24 +8,17 @@ use Dizions\Unclogged\Database\Database;
 
 abstract class Query
 {
-    private Database $database;
-
-    public function __construct(Database $database)
+    public function execute(Database $database): bool
     {
-        $this->database = $database;
-    }
-
-    public function execute(): bool
-    {
-        [$sql, $parameters] = $this->getSqlStringAndParameters($this->database);
-        $query = $this->database->prepare($sql);
+        [$sql, $parameters] = $this->getSqlStringAndParameters($database);
+        $query = $database->prepare($sql);
         return $query->execute($parameters);
     }
 
-    public function executeOrThrow(): void
+    public function executeOrThrow(Database $database): void
     {
-        [$sql, $parameters] = $this->getSqlStringAndParameters($this->database);
-        $query = $this->database->prepare($sql);
+        [$sql, $parameters] = $this->getSqlStringAndParameters($database);
+        $query = $database->prepare($sql);
         if (!$query->execute($parameters)) {
             throw new QueryFailureException("Failed to execute query: $sql");
         }
@@ -33,19 +26,4 @@ abstract class Query
 
     /** @return array{string, string[]} */
     abstract protected function getSqlStringAndParameters(Database $database): array;
-
-    protected function createColumnNameFromString(string $name): ColumnName
-    {
-        return new ColumnName($name);
-    }
-
-    protected function createSqlStringFromString(string $string): SqlString
-    {
-        return new SqlString($string);
-    }
-
-    protected function getDatabase(): Database
-    {
-        return $this->database;
-    }
 }

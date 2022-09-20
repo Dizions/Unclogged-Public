@@ -11,9 +11,8 @@ class Insert extends Query
     private TableName $table;
     private array $values = [];
 
-    public function __construct(Database $database, string $table)
+    public function __construct(string $table)
     {
-        parent::__construct($database);
         $this->table = new TableName($table);
     }
 
@@ -31,9 +30,9 @@ class Insert extends Query
         $values = [];
         $parameters = [];
         foreach ($this->values as $column => $value) {
-            $columns[] = $this->createColumnNameFromString($column)->render($database);
+            $columns[] = (new ColumnName($column))->render($database);
             if (!($value instanceof SqlStringInterface)) {
-                $value = $this->createSqlStringFromString((string)$value);
+                $value = new SqlString((string)$value);
             }
             if ($value->canUsePlaceholderInPreparedStatement()) {
                 $values[] = '?';

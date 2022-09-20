@@ -17,16 +17,15 @@ final class InsertTest extends TestCase
     public function testValuesMustBeProvided(): void
     {
         $db = $this->createMock(Database::class);
-        $insert = new Insert($db, 'x');
+        $insert = new Insert('x');
         $this->expectException(InvalidInsertException::class);
-        $insert->execute();
+        $insert->execute($db);
     }
 
     /** @dataProvider invalidValuesProvider */
     public function testInvalidValuesAreRejected(array $values): void
     {
-        $db = $this->createMock(Database::class);
-        $insert = new Insert($db, 'x');
+        $insert = new Insert('x');
         $this->expectException(InvalidInsertException::class);
         $insert->values($values);
     }
@@ -35,8 +34,8 @@ final class InsertTest extends TestCase
     public function testValuesCanBeInsertedIntoDatabase(string $in): void
     {
         $db = $this->createTestDatabase();
-        $insert = new Insert($db, 'test');
-        $insert->values(['test' => $in])->execute();
+        $insert = new Insert('test');
+        $insert->values(['test' => $in])->execute($db);
         $this->assertSame([[$in]], $db->query('SELECT * FROM test')->fetchAll(PDO::FETCH_NUM));
     }
 
@@ -44,8 +43,8 @@ final class InsertTest extends TestCase
     public function testValuesCanBeInsertedIntoDatabaseAsSqlString(string $in): void
     {
         $db = $this->createTestDatabase();
-        $insert = new Insert($db, 'test');
-        $insert->values(['test' => new SqlString($in)])->execute();
+        $insert = new Insert('test');
+        $insert->values(['test' => new SqlString($in)])->execute($db);
         $this->assertSame([[$in]], $db->query('SELECT * FROM test')->fetchAll(PDO::FETCH_NUM));
     }
 
@@ -56,9 +55,9 @@ final class InsertTest extends TestCase
         bool $outputValueShouldMatchInput = true
     ): void {
         $db = $this->createTestDatabase();
-        $insert = new Insert($db, 'test');
+        $insert = new Insert('test');
         if ($isValidInRawSql) {
-            $insert->values(['test' => new RawSqlString($in)])->execute();
+            $insert->values(['test' => new RawSqlString($in)])->execute($db);
             if ($outputValueShouldMatchInput) {
                 $this->assertSame([[$in]], $db->query('SELECT * FROM test')->fetchAll(PDO::FETCH_NUM));
             } else {
@@ -66,7 +65,7 @@ final class InsertTest extends TestCase
             }
         } else {
             $this->expectException(PDOException::class);
-            $insert->values(['test' => new RawSqlString($in)])->execute();
+            $insert->values(['test' => new RawSqlString($in)])->execute($db);
         }
     }
 

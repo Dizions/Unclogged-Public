@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database;
 
+use Dizions\Unclogged\Database\Query\Query;
+use Dizions\Unclogged\Database\Query\QueryFailureException;
 use Dizions\Unclogged\Database\Schema\MysqlSchemaRenderer;
 use Dizions\Unclogged\Database\Schema\SqliteSchemaRenderer;
 use Dizions\Unclogged\Database\Schema\TableSchema;
 use PDO;
+use PDOException;
 
 class Database extends PDO
 {
@@ -49,6 +52,27 @@ class Database extends PDO
             $this->exec($sql);
         }
         return $this;
+    }
+
+    /**
+     * @param Query $query
+     * @return bool
+     * @throws PDOException
+     */
+    public function execute(Query $query): bool
+    {
+        return $query->execute($this);
+    }
+
+    /**
+     * @param Query $query
+     * @return void
+     * @throws PDOException
+     * @throws QueryFailureException
+     */
+    public function executeOrThrow(Query $query): void
+    {
+        $query->executeOrThrow($this);
     }
 
     public function quoteIdentifier(string $identifier): string

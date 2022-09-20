@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database;
 
+use Dizions\Unclogged\Database\Query\Query;
 use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, TableSchema};
 use Dizions\Unclogged\TestCase;
 use PDO;
@@ -46,6 +47,22 @@ final class DatabaseTest extends TestCase
     {
         $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
         $this->assertIsString($db->quoteIdentifier('x'));
+    }
+
+    public function testQueryCanBeExecuted(): void
+    {
+        $query = $this->createMock(Query::class);
+        $query->expects($this->once())->method('execute');
+        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
+        $this->assertIsBool($db->execute($query));
+    }
+
+    public function testQueryCanBeExecutedOrExceptionThrownOnError(): void
+    {
+        $query = $this->createMock(Query::class);
+        $query->expects($this->once())->method('executeOrThrow');
+        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
+        $db->executeOrThrow($query);
     }
 
     public function testTableCanBeCreated(): void
