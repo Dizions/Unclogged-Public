@@ -13,16 +13,15 @@ use Dizions\Unclogged\TestCase;
 final class ColumnNameTest extends TestCase
 {
     /** @dataProvider validStringsProvider */
-    public function testCanBeConvertedtoString(string $in): void
+    public function testCanBeRenderedString(string $in): void
     {
         $db = $this->createMock(Database::class);
-        $this->assertIsString((string)(new ColumnName($db, $in)));
+        $this->assertIsString((new ColumnName($in))->render($db));
     }
 
     public function testCannotBeReplacedWithPlaceholderInPreparedStatement(): void
     {
-        $db = $this->createMock(Database::class);
-        $columnName = new ColumnName($db, 'x');
+        $columnName = new ColumnName('x');
         $this->assertFalse($columnName->canUsePlaceholderInPreparedStatement());
     }
 
@@ -31,16 +30,16 @@ final class ColumnNameTest extends TestCase
     {
         $db = $this->createMock(Database::class);
         $this->expectException(InvalidIdentifierException::class);
-        (string)(new ColumnName($db, $invalid));
+        (new ColumnName($invalid))->render($db);
     }
 
     public function testQuotedStringOutputIsCached()
     {
         $db = $this->createMock(Database::class);
         $db->expects($this->once())->method('quoteIdentifier');
-        $columnName = new ColumnName($db, 'x');
-        (string)$columnName;
-        (string)$columnName;
+        $columnName = new ColumnName('x');
+        $columnName->render($db);
+        $columnName->render($db);
     }
 
     public function invalidStringsProvider(): array

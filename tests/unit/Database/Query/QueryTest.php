@@ -56,7 +56,7 @@ final class QueryTest extends TestCase
     {
         $db = $this->createMock(Database::class);
         $query = new class ($db) extends Query {
-            protected function getSqlStringAndParameters(): array
+            protected function getSqlStringAndParameters(Database $database): array
             {
                 return [];
             }
@@ -72,7 +72,7 @@ final class QueryTest extends TestCase
     {
         $db = $this->createMock(Database::class);
         $query = new class ($db) extends Query {
-            protected function getSqlStringAndParameters(): array
+            protected function getSqlStringAndParameters(Database $database): array
             {
                 return [];
             }
@@ -88,7 +88,7 @@ final class QueryTest extends TestCase
     {
         $db = $this->createMock(Database::class);
         $query = new class ($db) extends Query {
-            protected function getSqlStringAndParameters(): array
+            protected function getSqlStringAndParameters(Database $database): array
             {
                 return [];
             }

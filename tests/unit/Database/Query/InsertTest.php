@@ -45,7 +45,7 @@ final class InsertTest extends TestCase
     {
         $db = $this->createTestDatabase();
         $insert = new Insert($db, 'test');
-        $insert->values(['test' => new SqlString($db, $in)])->execute();
+        $insert->values(['test' => new SqlString($in)])->execute();
         $this->assertSame([[$in]], $db->query('SELECT * FROM test')->fetchAll(PDO::FETCH_NUM));
     }
 
@@ -58,7 +58,7 @@ final class InsertTest extends TestCase
         $db = $this->createTestDatabase();
         $insert = new Insert($db, 'test');
         if ($isValidInRawSql) {
-            $insert->values(['test' => new RawSqlString($db, $in)])->execute();
+            $insert->values(['test' => new RawSqlString($in)])->execute();
             if ($outputValueShouldMatchInput) {
                 $this->assertSame([[$in]], $db->query('SELECT * FROM test')->fetchAll(PDO::FETCH_NUM));
             } else {
@@ -66,7 +66,7 @@ final class InsertTest extends TestCase
             }
         } else {
             $this->expectException(PDOException::class);
-            $insert->values(['test' => new RawSqlString($db, $in)])->execute();
+            $insert->values(['test' => new RawSqlString($in)])->execute();
         }
     }
 
@@ -78,7 +78,7 @@ final class InsertTest extends TestCase
             ['(SELECT 1)', true, false],
             ['CURRENT_TIMESTAMP', true, false],
             ['1', true],
-            ["O'Reiily", false],
+            ["O'Reilly", false],
             ['`', false],
             ['"', false],
         ];

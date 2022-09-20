@@ -17,14 +17,14 @@ abstract class Query
 
     public function execute(): bool
     {
-        [$sql, $parameters] = $this->getSqlStringAndParameters();
+        [$sql, $parameters] = $this->getSqlStringAndParameters($this->database);
         $query = $this->database->prepare($sql);
         return $query->execute($parameters);
     }
 
     public function executeOrThrow(): void
     {
-        [$sql, $parameters] = $this->getSqlStringAndParameters();
+        [$sql, $parameters] = $this->getSqlStringAndParameters($this->database);
         $query = $this->database->prepare($sql);
         if (!$query->execute($parameters)) {
             throw new QueryFailureException("Failed to execute query: $sql");
@@ -32,16 +32,16 @@ abstract class Query
     }
 
     /** @return array{string, string[]} */
-    abstract protected function getSqlStringAndParameters(): array;
+    abstract protected function getSqlStringAndParameters(Database $database): array;
 
     protected function createColumnNameFromString(string $name): ColumnName
     {
-        return new ColumnName($this->database, $name);
+        return new ColumnName($name);
     }
 
     protected function createSqlStringFromString(string $string): SqlString
     {
-        return new SqlString($this->database, $string);
+        return new SqlString($string);
     }
 
     protected function getDatabase(): Database

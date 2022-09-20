@@ -14,7 +14,7 @@ class Insert extends Query
     public function __construct(Database $database, string $table)
     {
         parent::__construct($database);
-        $this->table = new TableName($database, $table);
+        $this->table = new TableName($table);
     }
 
     public function values(array $values): self
@@ -24,27 +24,27 @@ class Insert extends Query
         return $this;
     }
 
-    protected function getSqlStringAndParameters(): array
+    protected function getSqlStringAndParameters(Database $database): array
     {
         $this->assertValuesArrayIsNonEmpty($this->values);
         $columns = [];
         $values = [];
         $parameters = [];
         foreach ($this->values as $column => $value) {
-            $columns[] = (string)$this->createColumnNameFromString($column);
-            if (!($value instanceof SqlString)) {
+            $columns[] = $this->createColumnNameFromString($column)->render($database);
+            if (!($value instanceof SqlStringInterface)) {
                 $value = $this->createSqlStringFromString((string)$value);
             }
             if ($value->canUsePlaceholderInPreparedStatement()) {
                 $values[] = '?';
-                $parameters[] = (string)$value;
+                $parameters[] = $value->render($database);
             } else {
-                $values[] = (string)$value;
+                $values[] = $value->render($database);
             }
         }
         $columnsCsv = implode(',', $columns);
         $valuesCsv = implode(',', $values);
-        return ["INSERT INTO {$this->table} ($columnsCsv) VALUES ($valuesCsv)", $parameters];
+        return ["INSERT INTO {$this->table->render($database)} ($columnsCsv) VALUES ($valuesCsv)", $parameters];
     }
 
     private function assertValuesArrayIsNonEmpty(array $values): void

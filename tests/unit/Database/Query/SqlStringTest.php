@@ -14,32 +14,17 @@ final class SqlStringTest extends TestCase
 {
     public function testCanBeConstructed(): void
     {
-        $db = $this->createMock(Database::class);
-        $this->assertInstanceOf(SqlString::class, new SqlString($db, 'x'));
+        $this->assertInstanceOf(SqlString::class, new SqlString('x'));
     }
 
     public function testCanBeReplacedWithPlaceholderInPreparedStatement(): void
     {
-        $db = $this->createMock(Database::class);
-        $this->assertTrue((new SqlString($db, 'x'))->canUsePlaceholderInPreparedStatement());
-    }
-
-    public function testDatabaseCanBeRetrieved(): void
-    {
-        $db = $this->createMock(Database::class);
-        $sqlString = new class ($db, 'x') extends SqlString {
-            public function get()
-            {
-                return $this->getDatabase();
-            }
-        };
-        $this->assertInstanceOf(Database::class, $sqlString->get());
+        $this->assertTrue((new SqlString('x'))->canUsePlaceholderInPreparedStatement());
     }
 
     public function testRawStringCanBeRetrieved(): void
     {
-        $db = $this->createMock(Database::class);
-        $sqlString = new class ($db, 'x') extends SqlString {
+        $sqlString = new class ('x') extends SqlString {
             public function get()
             {
                 return $this->getRaw();
@@ -52,7 +37,7 @@ final class SqlStringTest extends TestCase
     public function testStringCanBeRetrievedUnchanged(string $in): void
     {
         $db = $this->createMock(Database::class);
-        $this->assertSame($in, (string)(new SqlString($db, $in)));
+        $this->assertSame($in, (new SqlString($in))->render($db));
     }
 
     public function stringProvider(): array

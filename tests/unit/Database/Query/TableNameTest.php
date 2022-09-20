@@ -12,16 +12,15 @@ use Dizions\Unclogged\TestCase;
  */
 final class TableNameTest extends TestCase
 {
-    public function testCanBeConvertedtoString(): void
+    public function testCanBeRenderedString(): void
     {
         $db = $this->createMock(Database::class);
-        $this->assertIsString((string)(new TableName($db, 'x')));
+        $this->assertIsString((new TableName('x'))->render($db));
     }
 
     public function testCannotBeReplacedWithPlaceholderInPreparedStatement(): void
     {
-        $db = $this->createMock(Database::class);
-        $columnName = new TableName($db, 'x');
+        $columnName = new TableName('x');
         $this->assertFalse($columnName->canUsePlaceholderInPreparedStatement());
     }
 
@@ -29,8 +28,8 @@ final class TableNameTest extends TestCase
     {
         $db = $this->createMock(Database::class);
         $db->expects($this->once())->method('quoteIdentifier');
-        $columnName = new TableName($db, 'x');
-        (string)$columnName;
-        (string)$columnName;
+        $columnName = new TableName('x');
+        $columnName->render($db);
+        $columnName->render($db);
     }
 }

@@ -6,14 +6,12 @@ namespace Dizions\Unclogged\Database\Query;
 
 use Dizions\Unclogged\Database\Database;
 
-class SqlString
+class SqlString implements SqlStringInterface
 {
-    private Database $database;
     private string $raw;
 
-    public function __construct(Database $database, string $string)
+    public function __construct(string $string)
     {
-        $this->database = $database;
         $this->raw = $string;
     }
 
@@ -22,14 +20,9 @@ class SqlString
         return true;
     }
 
-    public function __toString(): string
+    public function render(Database $database): string
     {
         return $this->raw;
-    }
-
-    protected function getDatabase(): Database
-    {
-        return $this->database;
     }
 
     protected function getRaw(): string
