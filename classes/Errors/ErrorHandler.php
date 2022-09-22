@@ -7,6 +7,7 @@ namespace Dizions\Unclogged\Errors;
 use Dizions\Unclogged\Application;
 use Dizions\Unclogged\Logger\LoggerAware;
 use ErrorException;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class ErrorHandler extends LoggerAware
@@ -52,16 +53,18 @@ class ErrorHandler extends LoggerAware
 
     public function except(Throwable $exception): void
     {
-        if ($exception instanceof HttpException) {
-            $this->application->getResponseEmitter()->emit($exception->getResponse($this->application));
-            return;
+        try {
+            if ($exception instanceof HttpException) {
+                $this->emitResponseIfPossible($exception->getResponse($this->application));
+                return;
+            }
+            $message = 'Uncaught {exception}: "{message}" in {file}:{line}';
+            $this->logException($message, $exception);
+            $this->callPreviousExceptionHandler($exception);
+            $this->emitResponseIfPossible($this->application->generateErrorResponse('Internal Server Error', 500));
+        } catch (Throwable $e) {
+            echo 'Internal Server Error';
         }
-        $message = 'Uncaught {exception}: "{message}" in {file}:{line}';
-        $this->logException($message, $exception);
-        $this->callPreviousExceptionHandler($exception);
-        $this->application->getResponseEmitter()->emit(
-            $this->application->generateErrorResponse('Internal Server Error', 500)
-        );
     }
 
     public function errorToException(
@@ -134,5 +137,14 @@ class ErrorHandler extends LoggerAware
             'line' => $exception->getLine(),
         ];
         $this->logger->error($message, $context);
+    }
+
+    private function emitResponseIfPossible(ResponseInterface $response): void
+    {
+        try {
+            $this->application->getResponseEmitter()->emit($response);
+        } catch (Throwable $e) {
+            echo $response->getBody();
+        }
     }
 }

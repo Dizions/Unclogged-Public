@@ -6,6 +6,7 @@ namespace Dizions\Unclogged\Errors;
 
 use Dizions\Unclogged\TestCase;
 use ErrorException;
+use Exception;
 use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -114,6 +115,36 @@ final class ErrorHandlerTest extends TestCase
         $handler = new ErrorHandler($app);
         $exception = $this->createMock(HttpException::class);
         $exception->expects($this->once())->method('getResponse')->will($this->returnValue($response));
+        $handler->except($exception);
+    }
+
+    public function testExceptionHandlerEchoesResponseBodyIfResponseCannotBeEmitted(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())->method('getBody')->will($this->returnValue('response body'));
+        $emitter = $this->createMock(EmitterInterface::class);
+        $emitter->expects($this->once())->method('emit')->will($this->throwException(new Exception()));
+        $app = $this->createEmptyApplication();
+        $app->setFactoryFunction(EmitterInterface::class, fn () => $emitter);
+        $handler = new ErrorHandler($app);
+        $exception = $this->createMock(HttpException::class);
+        $exception->expects($this->once())->method('getResponse')->will($this->returnValue($response));
+        $this->expectOutputString('response body');
+        $handler->except($exception);
+    }
+
+    public function testExceptionHandlerEchoesFallbackMessageIfExceptionHandlingGeneratesNewExceptions(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())->method('getBody')->will($this->throwException(new Exception()));
+        $emitter = $this->createMock(EmitterInterface::class);
+        $emitter->expects($this->once())->method('emit')->will($this->throwException(new Exception()));
+        $app = $this->createEmptyApplication();
+        $app->setFactoryFunction(EmitterInterface::class, fn () => $emitter);
+        $handler = new ErrorHandler($app);
+        $exception = $this->createMock(HttpException::class);
+        $exception->expects($this->once())->method('getResponse')->will($this->returnValue($response));
+        $this->expectOutputString('Internal Server Error');
         $handler->except($exception);
     }
 
