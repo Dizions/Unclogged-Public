@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Schema;
 
-use Dizions\Unclogged\Database\Query\RawSqlString;
+use Dizions\Unclogged\Database\Query\SqlNull;
 use Dizions\Unclogged\Database\Query\SqlString;
 use Dizions\Unclogged\Database\Query\SqlStringInterface;
 use TypeError;
@@ -123,7 +123,7 @@ class ColumnSchema
     public function setDefault($default): self
     {
         if ($default === null) {
-            $this->default = new RawSqlString('NULL');
+            $this->default = new SqlNull();
         } elseif ($default instanceof SqlStringInterface) {
             $this->default = $default;
         } else {

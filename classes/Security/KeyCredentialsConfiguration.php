@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Security;
 
-use Dizions\Unclogged\Database\Query\RawSqlString;
+use Dizions\Unclogged\Database\Query\{SqlBoolean, SqlCurrentTimestamp};
 use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, TableSchema};
 use Dizions\Unclogged\Security\Password\PasswordValidator;
 use Dizions\Unclogged\Setup\Environment;
@@ -61,10 +61,10 @@ class KeyCredentialsConfiguration
                 ->setComment('Surrogate key to make references more efficient'),
             ColumnSchema::char('key_key', 12, 'ascii'),
             ColumnSchema::varchar('key_secret_hash', 255, 'ascii'),
-            ColumnSchema::datetime('key_valid_after')->setDefault(new RawSqlString('CURRENT_TIMESTAMP')),
+            ColumnSchema::datetime('key_valid_after')->setDefault(new SqlCurrentTimestamp()),
             ColumnSchema::datetime('key_valid_before')->setNullable(),
             ColumnSchema::bit('key_is_ephemeral', 1)
-                ->setDefault(new RawSqlString('false'))
+                ->setDefault(new SqlBoolean(false))
                 ->setComment('Ephemeral keys cannot be changed and are automatically deleted after expiration'),
             ColumnSchema::text('key_description', 'utf8mb4'),
             ColumnSchema::datetime('key_last_used')->setNullable()->setDefault(null),

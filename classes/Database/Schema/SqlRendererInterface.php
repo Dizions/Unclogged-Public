@@ -14,4 +14,9 @@ interface SqlRendererInterface
     public function renderCreateTable(TableSchema $schema): array;
     public function quoteIdentifier(string $identifier): string;
     public function quoteString(string $string): string;
+
+    /** Get the SQL string used to represent a boolean value */
+    public function renderBoolean(bool $value): string;
+    /** Get the SQL string used to retrieve the current date and time (typically 'CURRENT_TIMESTAMP') */
+    public function renderCurrentTimestamp(): string;
 }

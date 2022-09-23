@@ -6,9 +6,7 @@ namespace Dizions\Unclogged\Database\Schema;
 
 use Dizions\Unclogged\TestCase;
 
-/**
- * @covers Dizions\Unclogged\Database\Schema\SqlRenderer
- */
+/** @covers Dizions\Unclogged\Database\Schema\SqlRenderer */
 final class SqlRendererTest extends TestCase
 {
     public function testSchemaCanBeRendered(): void
@@ -33,6 +31,19 @@ final class SqlRendererTest extends TestCase
         $renderer = $this->createRenderer();
         $this->assertSame('`x`', $renderer->quoteIdentifier('x'));
         $this->assertSame('`x```', $renderer->quoteIdentifier('x`'));
+    }
+
+    public function testBooleanIsRenderedCorrectly(): void
+    {
+        $renderer = $this->createRenderer();
+        $this->assertSame('true', $renderer->renderBoolean(true));
+        $this->assertSame('false', $renderer->renderBoolean(false));
+    }
+
+    public function testCurrentTimestampIsRenderedCorrectly(): void
+    {
+        $renderer = $this->createRenderer();
+        $this->assertSame('CURRENT_TIMESTAMP', $renderer->renderCurrentTimestamp());
     }
 
     public function testNullableColumnCanBeRendered(): void

@@ -27,6 +27,16 @@ abstract class SqlRenderer implements SqlRendererInterface
         return "'" . str_replace("'", "''", $string) . "'";
     }
 
+    public function renderBoolean(bool $value): string
+    {
+        return $value ? 'true' : 'false';
+    }
+
+    public function renderCurrentTimestamp(): string
+    {
+        return 'CURRENT_TIMESTAMP';
+    }
+
     protected function renderColumn(TableSchema $schema, ColumnSchema $column): string
     {
         return implode(' ', array_filter([
