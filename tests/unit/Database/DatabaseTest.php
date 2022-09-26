@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Dizions\Unclogged\Database;
 
 use Dizions\Unclogged\Database\Query\Query;
-use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, TableSchema};
+use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, IncompatibleSchemaVersionException, TableSchema};
+use Dizions\Unclogged\Database\Schema\{TableDefinition, TableDefinitionInterface};
 use Dizions\Unclogged\TestCase;
 use PDO;
 
@@ -77,6 +78,63 @@ final class DatabaseTest extends TestCase
         );
     }
 
+    public function testTableDefinitionCanBeCreated(): void
+    {
+        $class = get_class(new class () extends TableDefinition {
+            public function getSchemasByVersion(): array
+            {
+                return [];
+            }
+        });
+        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
+        $this->assertInstanceOf(TableDefinitionInterface::class, $db->getTableDefinition($class));
+    }
+
+    /** @dataProvider schemaCompatibilityCheckProvider */
+    public function testTableDefinitionCanBeCheckedForCompatibility(
+        int $schemaVersion,
+        ?int $targetVersion,
+        bool $expectedToSucceed
+    ): void {
+        $class = get_class(new class () extends TableDefinition {
+            public function getSchemasByVersion(): array
+            {
+                return [];
+            }
+            public function areVersionsCompatible(int $targetVersion, int $currentVersion = self::LATEST): bool
+            {
+                return $targetVersion == $currentVersion;
+            }
+        });
+        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
+        $db->setSchemaVersion($schemaVersion);
+        if ($expectedToSucceed) {
+            $this->assertInstanceOf(TableDefinitionInterface::class, $db->getTableDefinition($class, $targetVersion));
+        } else {
+            $this->expectException(IncompatibleSchemaVersionException::class);
+            $db->getTableDefinition($class, $targetVersion);
+        }
+    }
+
+    public function testTableDefinitionIsCreatedOnlyOnce(): void
+    {
+        $class = get_class(new class () extends TableDefinition {
+            public static $calls = -1;
+            public function __construct()
+            {
+                static::$calls++;
+            }
+            public function getSchemasByVersion(): array
+            {
+                return [];
+            }
+        });
+        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
+        $db->getTableDefinition($class);
+        $db->getTableDefinition($class);
+        $this->assertSame(1, $class::$calls);
+    }
+
     public function testMysqlTablesAreCreatedUsingInnoDb(): void
     {
         $dummyDb = new class (new BasicConnectionParameters('sqlite', [':memory:'], [])) extends Database{
@@ -100,5 +158,31 @@ final class DatabaseTest extends TestCase
             'CREATE TABLE IF NOT EXISTS test(a INT NOT NULL, b INT NOT NULL) ENGINE=InnoDB',
             $this->reformatSql($dummyDb->execLog[0])
         );
+    }
+
+    public function testSchemaVersionCanBeSet(): void
+    {
+        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
+        $db->setSchemaVersion(23);
+        $this->assertSame(23, $db->getSchemaVersion());
+    }
+
+    public function testSchemaVersionDefaultsToLatest(): void
+    {
+        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
+        $this->assertSame(TableDefinitionInterface::LATEST, $db->getSchemaVersion());
+    }
+
+    public function schemaCompatibilityCheckProvider(): array
+    {
+        return [
+            // [schema version, check version, expected result]
+            [1, null, true],
+            [1, 1, true],
+            [1, 2, false],
+            [TableDefinitionInterface::LATEST, null, true],
+            [TableDefinitionInterface::LATEST, TableDefinitionInterface::LATEST, true],
+            [TableDefinitionInterface::LATEST, 1, false],
+        ];
     }
 }
