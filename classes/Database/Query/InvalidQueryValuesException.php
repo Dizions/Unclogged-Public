@@ -6,6 +6,6 @@ namespace Dizions\Unclogged\Database\Query;
 
 use Exception;
 
-class InvalidInsertException extends Exception
+class InvalidQueryValuesException extends Exception
 {
 }

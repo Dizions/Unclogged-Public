@@ -9,16 +9,14 @@ use Dizions\Unclogged\TestCase;
 use PDO;
 use PDOException;
 
-/**
- * @covers Dizions\Unclogged\Database\Query\Insert
- */
+/** @covers Dizions\Unclogged\Database\Query\Insert */
 final class InsertTest extends TestCase
 {
     public function testValuesMustBeProvided(): void
     {
         $db = $this->createMock(Database::class);
         $insert = new Insert('x');
-        $this->expectException(InvalidInsertException::class);
+        $this->expectException(InvalidQueryValuesException::class);
         $insert->execute($db);
     }
 
@@ -26,7 +24,7 @@ final class InsertTest extends TestCase
     public function testInvalidValuesAreRejected(array $values): void
     {
         $insert = new Insert('x');
-        $this->expectException(InvalidInsertException::class);
+        $this->expectException(InvalidQueryValuesException::class);
         $insert->values($values);
     }
 
