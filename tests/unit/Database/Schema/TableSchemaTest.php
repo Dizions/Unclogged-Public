@@ -13,7 +13,7 @@ final class TableSchemaTest extends TestCase
 {
     public function testColumnListCanBeEmpty(): void
     {
-        $schema = new TableSchema('name', []);
+        $schema = TableSchema::new('name', []);
         $this->assertInstanceOf(TableSchema::class, $schema);
         $this->assertCount(0, $schema->getColumns());
     }
@@ -40,7 +40,7 @@ final class TableSchemaTest extends TestCase
 
     public function testCompositePrimaryKeyCanBeAdded(): void
     {
-        $schema = new TableSchema('name', [new ColumnSchema('id'), new ColumnSchema('name')]);
+        $schema = TableSchema::new('name', [new ColumnSchema('id'), new ColumnSchema('name')]);
         $this->assertSame(['id', 'name'], $schema->setPrimary(['id', 'name'])->getPrimary());
     }
 

@@ -17,6 +17,7 @@ class TableSchema
     private array $indexes = [];
 
     /**
+     * @param string $name
      * @param iterable<ColumnSchema> $columnSchemas
      */
     public function __construct(string $name, iterable $columnSchemas)
@@ -29,9 +30,22 @@ class TableSchema
     }
 
     /**
+     * Exactly the same as using the constructor directly, but more suitable for chaining since it
+     * doesn't need to be wrapped in brackets.
+     *
+     * @param string $name
+     * @param iterable<ColumnSchema> $columnSchemas
+     * @return static
+     */
+    public static function new(string $name, iterable $columnSchemas): self
+    {
+        return new self($name, $columnSchemas);
+    }
+
+    /**
      * @param iterable<string> $columnNames
      * @param string $indexName
-     * @return self $this
+     * @return static $this
      */
     public function addIndex(iterable $columnNames, string $indexName = ''): self
     {
@@ -46,7 +60,7 @@ class TableSchema
     /**
      * @param iterable<string> $columnNames
      * @param string $constraintName
-     * @return self $this
+     * @return static $this
      */
     public function addUnique(iterable $columnNames, string $constraintName = ''): self
     {
@@ -93,7 +107,7 @@ class TableSchema
 
     /**
      * @param iterable<string> $primary
-     * @return self $this
+     * @return static $this
      */
     public function setPrimary(iterable $primary): self
     {

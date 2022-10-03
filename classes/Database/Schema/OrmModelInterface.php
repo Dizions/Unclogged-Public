@@ -6,7 +6,7 @@ namespace Dizions\Unclogged\Database\Schema;
 
 /**
  * ORM models provide an abstraction that encapsulates a database table with an object-oriented
- * interface, where one object represents a database row.
+ * interface, where one object represents a database record.
  *
  * @package Dizions\Unclogged\Database\Schema
  */
