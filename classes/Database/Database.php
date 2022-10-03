@@ -6,7 +6,6 @@ namespace Dizions\Unclogged\Database;
 
 use Dizions\Unclogged\Database\Query\Query;
 use Dizions\Unclogged\Database\Query\QueryFailureException;
-use Dizions\Unclogged\Database\Schema\IncompatibleSchemaVersionException;
 use Dizions\Unclogged\Database\Schema\Renderers\MysqlRenderer;
 use Dizions\Unclogged\Database\Schema\Renderers\SqliteRenderer;
 use Dizions\Unclogged\Database\Schema\Renderers\SqlRendererInterface;
@@ -21,8 +20,8 @@ class Database extends PDO
     private ConnectionParameters $parameters;
     private SqlRendererInterface $renderer;
     private int $schemaVersion = TableDefinitionInterface::LATEST;
-    /** @var array<string, TableDefinitionInterface> */
-    private array $tableDefinitions = [];
+    /** @var array<string, object> */
+    private array $cachedInstances = [];
 
     public function __construct(ConnectionParameters $parameters)
     {
@@ -94,31 +93,15 @@ class Database extends PDO
     }
 
     /**
-     * Get an instance of the given table definition class, optionally checking for version
-     * compatibility.
+     * Get a cached instance of the given class, using a callable to create it if not found.
      *
-     * @psalm-template TableDefinitionClass of TableDefinitionInterface
-     * @psalm-param class-string<TableDefinitionClass> $class
-     * @psalm-return TableDefinitionClass
-     *
-     * @param string $class
-     * @param int|null $mustBeCompatibleWithVersion
-     * @return TableDefinitionInterface
-     * @throws IncompatibleSchemaVersionException
+     * @psalm-template InstanceClass of object
+     * @psalm-param class-string<InstanceClass> $class
+     * @psalm-return InstanceClass
      */
-    public function getTableDefinition(
-        string $class,
-        ?int $mustBeCompatibleWithVersion = null
-    ): TableDefinitionInterface {
-        $this->tableDefinitions[$class] ??= new $class();
-        /** @var TableDefinitionInterface */
-        $definition = $this->tableDefinitions[$class];
-        if ($mustBeCompatibleWithVersion !== null) {
-            if (!$definition->areVersionsCompatible($mustBeCompatibleWithVersion, $this->getSchemaVersion())) {
-                throw new IncompatibleSchemaVersionException();
-            }
-        }
-        return $definition;
+    public function getCachedInstance(string $class, callable $generateDefault): object
+    {
+        return $this->cachedInstances[$class] ??= $generateDefault();
     }
 
     /** @return static $this */

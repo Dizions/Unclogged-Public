@@ -87,33 +87,7 @@ final class DatabaseTest extends TestCase
             }
         });
         $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
-        $this->assertInstanceOf(TableDefinitionInterface::class, $db->getTableDefinition($class));
-    }
-
-    /** @dataProvider schemaCompatibilityCheckProvider */
-    public function testTableDefinitionCanBeCheckedForCompatibility(
-        int $schemaVersion,
-        ?int $targetVersion,
-        bool $expectedToSucceed
-    ): void {
-        $class = get_class(new class () extends TableDefinition {
-            public function getSchemasByVersion(): array
-            {
-                return [];
-            }
-            public function areVersionsCompatible(int $targetVersion, int $currentVersion = self::LATEST): bool
-            {
-                return $targetVersion == $currentVersion;
-            }
-        });
-        $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
-        $db->setSchemaVersion($schemaVersion);
-        if ($expectedToSucceed) {
-            $this->assertInstanceOf(TableDefinitionInterface::class, $db->getTableDefinition($class, $targetVersion));
-        } else {
-            $this->expectException(IncompatibleSchemaVersionException::class);
-            $db->getTableDefinition($class, $targetVersion);
-        }
+        $this->assertInstanceOf(TableDefinitionInterface::class, $db->getCachedInstance($class, fn() => new $class()));
     }
 
     public function testTableDefinitionIsCreatedOnlyOnce(): void
@@ -130,8 +104,8 @@ final class DatabaseTest extends TestCase
             }
         });
         $db = new Database(new BasicConnectionParameters('sqlite', [':memory:']));
-        $db->getTableDefinition($class);
-        $db->getTableDefinition($class);
+        $db->getCachedInstance($class, fn() => new $class());
+        $db->getCachedInstance($class, fn() => new $class());
         $this->assertSame(1, $class::$calls);
     }
 
