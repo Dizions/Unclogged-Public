@@ -42,6 +42,14 @@ class TableDefinitionTest extends TestCase
         $this->assertSame($v0, $definition->getSchema());
     }
 
+    public function testTableDefinitionWithNoSchemasIsRejected(): void
+    {
+        $definition = new $this->class();
+        $definition->schemas = [];
+        $this->expectException(InvalidTableDefinitionException::class);
+        $definition->getSchema();
+    }
+
     public function testVersionCheckIsCached(): void
     {
         $v0 = new TableSchema('table', []);

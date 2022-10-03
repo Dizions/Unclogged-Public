@@ -60,6 +60,9 @@ abstract class TableDefinition implements TableDefinitionInterface
     {
         if (!isset($this->removedInVersion)) {
             $schemas = $this->getSchemasSortedByVersionDescending();
+            if (empty($schemas)) {
+                throw new InvalidTableDefinitionException("A TableDefinition must specify at least one schema version");
+            }
             $latest = array_key_first($schemas);
             $this->removedInVersion = $schemas[$latest] === null ? $latest : null;
         }
