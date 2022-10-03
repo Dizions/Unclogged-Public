@@ -7,7 +7,7 @@ namespace Dizions\Unclogged\Database\Query\Helpers;
 use Dizions\Unclogged\Database\Query\InvalidQueryValuesException;
 use Dizions\Unclogged\Database\Query\RawSqlString;
 use Dizions\Unclogged\Database\Query\SqlString;
-use Dizions\Unclogged\Database\Schema\SqliteRenderer;
+use Dizions\Unclogged\Database\Schema\Renderers\SqliteRenderer;
 use Dizions\Unclogged\TestCase;
 use Dizions\Unclogged\TestStringable;
 

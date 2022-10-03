@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dizions\Unclogged\Database\Query;
 
 use Dizions\Unclogged\Database\Schema\ColumnSchema;
-use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
+use Dizions\Unclogged\Database\Schema\Renderers\SqlRendererInterface;
 use Dizions\Unclogged\Database\Schema\TableSchema;
 use Dizions\Unclogged\TestCase;
 use PDO;

@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Database\Schema;
+namespace Dizions\Unclogged\Database\Schema\Renderers;
+
+use Dizions\Unclogged\Database\Schema\ColumnType;
+use Dizions\Unclogged\Database\Schema\TableSchema;
 
 class MysqlRenderer extends SqlRenderer
 {

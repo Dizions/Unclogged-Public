@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Database\Schema;
+namespace Dizions\Unclogged\Database\Schema\Renderers;
 
 use Dizions\Unclogged\Database\Query\SqlStringInterface;
+use Dizions\Unclogged\Database\Schema\ColumnSchema;
+use Dizions\Unclogged\Database\Schema\ColumnType;
+use Dizions\Unclogged\Database\Schema\TableSchema;
 
 abstract class SqlRenderer implements SqlRendererInterface
 {

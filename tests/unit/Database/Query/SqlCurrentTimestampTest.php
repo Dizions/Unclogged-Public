@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Query;
 
-use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
+use Dizions\Unclogged\Database\Schema\Renderers\SqlRendererInterface;
 use Dizions\Unclogged\TestCase;
 
 /** @covers Dizions\Unclogged\Database\Query\SqlCurrentTimestamp */

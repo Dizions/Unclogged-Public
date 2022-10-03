@@ -9,7 +9,7 @@ use Dizions\Unclogged\Database\Query\ColumnName;
 use Dizions\Unclogged\Database\Query\InvalidQueryValuesException;
 use Dizions\Unclogged\Database\Query\SqlString;
 use Dizions\Unclogged\Database\Query\SqlStringInterface;
-use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
+use Dizions\Unclogged\Database\Schema\Renderers\SqlRendererInterface;
 
 class AssocValues implements Countable
 {

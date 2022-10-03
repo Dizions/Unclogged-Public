@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Database\Schema;
+namespace Dizions\Unclogged\Database\Schema\Renderers;
 
+use Dizions\Unclogged\Database\Schema\ColumnSchema;
+use Dizions\Unclogged\Database\Schema\ColumnType;
+use Dizions\Unclogged\Database\Schema\TableSchema;
 use Dizions\Unclogged\TestCase;
 
-/** @covers Dizions\Unclogged\Database\Schema\SqlRenderer */
+/** @covers Dizions\Unclogged\Database\Schema\Renderers\SqlRenderer */
 final class SqlRendererTest extends TestCase
 {
     public function testSchemaCanBeRendered(): void

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Database\Query;
 
-use Dizions\Unclogged\Database\Schema\SqlRendererInterface;
+use Dizions\Unclogged\Database\Schema\Renderers\SqlRendererInterface;
 
 class TableName extends Identifier
 {
