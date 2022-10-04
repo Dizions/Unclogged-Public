@@ -62,6 +62,12 @@ class Request
         return $this->decodeBodyParams($contentType);
     }
 
+    public function getContentLength(): ?int
+    {
+        $contentLength =  $this->serverRequest->getServerParams()['CONTENT_LENGTH'] ?? null;
+        return $contentLength === null ? null : (int)$contentLength;
+    }
+
     /**
      * Get the first matching header, or null.
      * @param string $header

@@ -18,6 +18,14 @@ final class RequestTest extends TestCase
         $this->assertSame('BAR', (new Request($serverRequest))->getServerRequest()->getServerParams()['HTTP_X_FOO']);
     }
 
+    public function testContentLengthCanBeRetrieved(): void
+    {
+        $serverRequest = ServerRequestFactory::fromGlobals([]);
+        $this->assertNull((new Request($serverRequest))->getContentLength());
+        $serverRequest = ServerRequestFactory::fromGlobals(['CONTENT_LENGTH' => '1234']);
+        $this->assertSame(1234, (new Request($serverRequest))->getContentLength());
+    }
+
     public function testHeaderCanBeRetrievedCaseInsensitively(): void
     {
         $request = new Request(ServerRequestFactory::fromGlobals(['HTTP_X_FOO' => 'BAR']));
