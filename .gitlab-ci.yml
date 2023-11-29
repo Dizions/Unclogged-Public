@@ -24,6 +24,8 @@ stages:
     - vendor/bin/phpunit
     - "coverage=$(sed -n 's/^.*Lines:   \\([0-9]*.[0-9]*\\)% .*$/\\1/p' < tests/output/coverage/summary.txt)"
     - if [ $coverage != '100.00' ]; then echo "Coverage dropped to $coverage%"; exit 255; fi
+    - "grep 'Lines:  ' tests/output/coverage/summary.txt"
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
 
 test:7.4:
   extends: .test-base
