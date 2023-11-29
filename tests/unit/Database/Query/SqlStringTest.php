@@ -42,7 +42,7 @@ final class SqlStringTest extends TestCase
         $this->assertSame($in, (new SqlString($in))->render($renderer));
     }
 
-    public function stringProvider(): array
+    public static function stringProvider(): array
     {
         return [
             ['x'],

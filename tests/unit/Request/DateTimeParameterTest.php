@@ -70,7 +70,7 @@ final class DateTimeParameterTest extends TestCase
         $this->assertSame($atom, $parameter->get()->format(DateTime::ATOM));
     }
 
-    public function emptyValuesProvider(): array
+    public static function emptyValuesProvider(): array
     {
         return [
             [''],
@@ -80,7 +80,7 @@ final class DateTimeParameterTest extends TestCase
         ];
     }
 
-    public function invalidValuesProvider(): array
+    public static function invalidValuesProvider(): array
     {
         return [
             ['2022-09-31'],
@@ -92,7 +92,7 @@ final class DateTimeParameterTest extends TestCase
         ];
     }
 
-    public function validNonEmptyValuesProvider(): array
+    public static function validNonEmptyValuesProvider(): array
     {
         date_default_timezone_set('Europe/London');
         return [

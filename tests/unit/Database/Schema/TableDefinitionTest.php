@@ -93,7 +93,7 @@ class TableDefinitionTest extends TestCase
         $this->assertTrue($definition->areVersionsCompatible(3));
     }
 
-    public function schemaVersionsProvider(): array
+    public static function schemaVersionsProvider(): array
     {
         $v1 = new TableSchema('table', []);
         $v2 = new TableSchema('table', []);

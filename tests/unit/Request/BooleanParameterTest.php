@@ -39,7 +39,7 @@ final class BooleanParameterTest extends TestCase
         $parameter->get();
     }
 
-    public function truthyValuesProvider(): array
+    public static function truthyValuesProvider(): array
     {
         return [
             [1],
@@ -57,7 +57,7 @@ final class BooleanParameterTest extends TestCase
         ];
     }
 
-    public function falsyValuesProvider(): array
+    public static function falsyValuesProvider(): array
     {
         return [
             [0],
@@ -75,7 +75,7 @@ final class BooleanParameterTest extends TestCase
         ];
     }
 
-    public function nonBooleanValuesProvider(): array
+    public static function nonBooleanValuesProvider(): array
     {
         return [
             [1.0],

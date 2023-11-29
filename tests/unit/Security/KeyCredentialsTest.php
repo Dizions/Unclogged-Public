@@ -253,7 +253,7 @@ final class KeyCredentialsTest extends TestCase
         $this->assertSame('new', $db->query('SELECT key_secret_hash FROM test_keys')->fetch()[0]);
     }
 
-    public function dateRestrictionProvider(): array
+    public static function dateRestrictionProvider(): array
     {
         return [
             ['2001-01-01 00:00:00', null, true],
@@ -265,7 +265,7 @@ final class KeyCredentialsTest extends TestCase
         ];
     }
 
-    public function ipAddressProvider(): array
+    public static function ipAddressProvider(): array
     {
         return [
             ['["10.0.0.0/8"]', '10.2.3.4', true],

@@ -67,7 +67,7 @@ final class InsertTest extends TestCase
         }
     }
 
-    public function validValuesProvider(): array
+    public static function validValuesProvider(): array
     {
         return [
             // [string input, bool isValidInRawSql, bool outputValueShouldMatchInput]
@@ -81,7 +81,7 @@ final class InsertTest extends TestCase
         ];
     }
 
-    public function invalidValuesProvider(): array
+    public static function invalidValuesProvider(): array
     {
         return [
             [['x', 'y']],

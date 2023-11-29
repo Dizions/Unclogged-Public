@@ -92,7 +92,7 @@ final class IpAddressRangeTest extends TestCase
         $this->assertFalse($range->contains('10.0.0.1'));
     }
 
-    public function ip4StartAddressProvider(): array
+    public static function ip4StartAddressProvider(): array
     {
         return [
             ['0.0.0.0/0', '0.0.0.0'],
@@ -109,7 +109,7 @@ final class IpAddressRangeTest extends TestCase
         ];
     }
 
-    public function ip6StartAddressProvider(): array
+    public static function ip6StartAddressProvider(): array
     {
         return [
             ['::/0', '::'],
@@ -128,7 +128,7 @@ final class IpAddressRangeTest extends TestCase
         ];
     }
 
-    public function ip4EndAddressProvider(): array
+    public static function ip4EndAddressProvider(): array
     {
         return [
             ['0.0.0.0/0', '255.255.255.255'],
@@ -145,7 +145,7 @@ final class IpAddressRangeTest extends TestCase
         ];
     }
 
-    public function ip6EndAddressProvider(): array
+    public static function ip6EndAddressProvider(): array
     {
         return [
             ['::/0', 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'],

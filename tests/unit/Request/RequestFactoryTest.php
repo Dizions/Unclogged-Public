@@ -27,7 +27,7 @@ final class RequestFactoryTest extends TestCase
         $this->assertSame($expected, $request->getRemoteAddress());
     }
 
-    public function remoteAddressServerInfoProvider()
+    public static function remoteAddressServerInfoProvider()
     {
         return [
             'Local connection' => ['127.0.0.1', ['REMOTE_ADDR' => '127.0.0.1']],

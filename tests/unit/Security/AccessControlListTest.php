@@ -85,7 +85,7 @@ class AccessControlListTest extends TestCase
         $this->assertSame(null, $acl->getScopeValue('clientId'));
     }
 
-    public function validAclJsonProvider(): array
+    public static function validAclJsonProvider(): array
     {
         return [
             [AccessControlList::EMPTY_ACL],
@@ -103,7 +103,7 @@ class AccessControlListTest extends TestCase
         ];
     }
 
-    public function invalidAclJsonProvider(): array
+    public static function invalidAclJsonProvider(): array
     {
         return [
             [''],
@@ -118,7 +118,7 @@ class AccessControlListTest extends TestCase
         ];
     }
 
-    public function permissionResultProvider(): array
+    public static function permissionResultProvider(): array
     {
         $getKey1 = ['foo', 'GetKey', 'key', '1'];
         $getKey2 = ['foo', 'GetKey', 'key', '2'];

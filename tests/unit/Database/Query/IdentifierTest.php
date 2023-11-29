@@ -24,7 +24,7 @@ final class IdentifierTest extends TestCase
         $this->getMockForAbstractClass(Identifier::class, [$invalid]);
     }
 
-    public function invalidStringsProvider(): array
+    public static function invalidStringsProvider(): array
     {
         return [
             [''],

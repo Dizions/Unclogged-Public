@@ -48,7 +48,7 @@ final class KeyCredentialsConfigurationTest extends TestCase
         $this->assertInstanceOf(PasswordValidator::class, $config->getPasswordValidator());
     }
 
-    public function applicationNameProvider(): array
+    public static function applicationNameProvider(): array
     {
         return [
             ['the application', 'The-Application-Key', 'TheApplicationKey'],

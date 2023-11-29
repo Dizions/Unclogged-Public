@@ -46,7 +46,7 @@ final class ConnectionParametersTest extends TestCase
         $this->assertNull($mock->getOptions());
     }
 
-    public function driverAndParameterProvider(): array
+    public static function driverAndParameterProvider(): array
     {
         return [
             ['mysql:', 'mysql', []],

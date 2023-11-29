@@ -20,7 +20,7 @@ final class PasswordValidatorTest extends TestCase
         $this->assertEmpty(array_diff(mb_str_split($string), mb_str_split($alphabet)));
     }
 
-    public function randomStringParametersProvider(): array
+    public static function randomStringParametersProvider(): array
     {
         return [
             'normal alphabet' => [32, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'],

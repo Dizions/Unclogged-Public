@@ -42,7 +42,7 @@ final class ColumnNameTest extends TestCase
         $columnName->render($renderer);
     }
 
-    public function invalidStringsProvider(): array
+    public static function invalidStringsProvider(): array
     {
         return [
             [''],
@@ -53,7 +53,7 @@ final class ColumnNameTest extends TestCase
         ];
     }
 
-    public function validStringsProvider(): array
+    public static function validStringsProvider(): array
     {
         return [
             ['x'],

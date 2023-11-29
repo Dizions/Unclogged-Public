@@ -147,7 +147,7 @@ final class DatabaseTest extends TestCase
         $this->assertSame(TableDefinitionInterface::LATEST, $db->getSchemaVersion());
     }
 
-    public function schemaCompatibilityCheckProvider(): array
+    public static function schemaCompatibilityCheckProvider(): array
     {
         return [
             // [schema version, check version, expected result]

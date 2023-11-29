@@ -30,7 +30,7 @@ final class IpAddressParameterTest extends TestCase
         $this->assertSame($in, $parameter->get());
     }
 
-    public function invalidValuesProvider(): array
+    public static function invalidValuesProvider(): array
     {
         return [
             [''],
@@ -42,7 +42,7 @@ final class IpAddressParameterTest extends TestCase
         ];
     }
 
-    public function validValuesProvider(): array
+    public static function validValuesProvider(): array
     {
         return [
             ['10.0.0.1'],

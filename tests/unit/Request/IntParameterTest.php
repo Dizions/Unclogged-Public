@@ -29,7 +29,7 @@ final class IntParameterTest extends TestCase
         $this->assertSame(3, (new IntParameter('b', $request))->get());
     }
 
-    public function invalidValuesProvider(): array
+    public static function invalidValuesProvider(): array
     {
         return [
             [1.0],
