@@ -1,4 +1,6 @@
 {
+    "name": "dizions/unclogged",
+    "description": "A simple PHP framework",
     "autoload": {
         "psr-4": {
             "Dizions\\Unclogged\\": ["classes", "tests/classes"]
@@ -8,6 +10,7 @@
         "phpunit/phpunit": "^9"
     },
     "require": {
+        "php": ">=7.4",
         "laminas/laminas-diactoros": "^2",
         "laminas/laminas-httphandlerrunner": "^2",
         "opis/json-schema": "^2.3",
