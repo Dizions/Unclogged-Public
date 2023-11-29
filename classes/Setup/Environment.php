@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Dizions\Unclogged\Setup;
 
 use DirectoryIterator;
-use Dizions\DotEnv\DotEnv;
-use JsonException;
 use Dizions\Unclogged\Filesystem\FilesystemHelpers;
+use Dotenv\Dotenv;
+use JsonException;
+use SplFileInfo;
 
 /**
  * Get variables from the environment, or from *.env files found in any of the given directories.
@@ -124,15 +125,17 @@ class Environment
         usort($files, function ($a, $b) {
             return $a->getFileName() <=> $b->getFileName();
         });
+        // Do these one-by-one to ensure that later files override earlier ones
         foreach ($files as $envFile) {
             $variables = array_merge(
                 $variables,
-                (new DotEnv("$dir/" . $envFile->getFileName()))->get()
+                Dotenv::createArrayBacked($dir, $envFile->getFileName())->load()
             );
         }
         return $variables;
     }
 
+    /** @return SplFileInfo[] */
     private function getCandidateFilesFromDirectory(string $dir): array
     {
         $files = [];
