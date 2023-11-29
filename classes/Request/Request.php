@@ -127,7 +127,7 @@ class Request
 
     private function decodeBodyParams(string $contentType): array
     {
-        switch ($contentType) {
+        switch (explode(';', $contentType)[0]) {
             case 'application/json':
                 return $this->getJsonArray();
             case 'application/x-www-form-urlencoded':
