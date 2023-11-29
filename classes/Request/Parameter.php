@@ -98,6 +98,12 @@ abstract class Parameter
         return $this;
     }
 
+    /**
+     * @throws HttpBadRequestException
+     * @throws UnknownContentTypeException
+     * @throws MissingParameterException
+     * @throws InvalidParameterException
+     */
     public function __toString(): string
     {
         return (string)$this->get();
@@ -113,6 +119,7 @@ abstract class Parameter
         return $this->request;
     }
 
+    /** @throws InvalidParameterException */
     private function checkOptionIsValid($value): void
     {
         if (isset($this->options) && !in_array($value, $this->options)) {
@@ -122,6 +129,10 @@ abstract class Parameter
         $this->runValidators($value);
     }
 
+    /**
+     * @throws HttpBadRequestException
+     * @throws UnknownContentTypeException
+     */
     private function getRequestParams(): array
     {
         switch ($this->source) {
@@ -134,6 +145,7 @@ abstract class Parameter
         }
     }
 
+    /** @throws InvalidParameterException */
     private function runValidators($value): void
     {
         foreach ($this->validators as $callback) {
