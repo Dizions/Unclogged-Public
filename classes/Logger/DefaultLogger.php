@@ -9,7 +9,8 @@ use Dizions\Unclogged\Strings\BasicInterpolator;
 
 class DefaultLogger extends AbstractLogger
 {
-    public function log($level, $message, array $context = [])
+    /** @var Stringable|string $message */
+    public function log($level, $message, array $context = []): void
     {
         $message = (new BasicInterpolator())->interpolate($message, $context);
         error_log("[$level] $message");

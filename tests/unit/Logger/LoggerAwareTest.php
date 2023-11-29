@@ -15,35 +15,17 @@ final class LoggerAwareTest extends TestCase
     public function testLoggerIsSetCorrectly(): void
     {
         $loggerAware = new class () extends LoggerAware {
-            public function getLogger()
-            {
-                return $this->logger;
-            }
         };
         $logger = new NullLogger();
-        $this->assertSame($logger, $loggerAware->setLogger($logger)->getLogger());
-    }
-
-    public function testLoggerAwareReturnsItselfAfterSettingLogger(): void
-    {
-        $loggerAware = $this->getMockForAbstractClass(LoggerAware::class);
-        $this->assertSame($loggerAware, $loggerAware->setLogger(new NullLogger()));
+        $loggerAware->setLogger($logger);
+        $this->assertSame($logger, $loggerAware->getLogger());
     }
 
     public function testNullLoggerIsSetCorrectly(): void
     {
         $loggerAware = new class () extends LoggerAware {
-            public function getLogger()
-            {
-                return $this->logger;
-            }
         };
-        $this->assertInstanceOf(NullLogger::class, $loggerAware->setNullLogger()->getLogger());
-    }
-
-    public function testNullLoggerAwareReturnsItselfAfterSettingLogger(): void
-    {
-        $loggerAware = $this->getMockForAbstractClass(LoggerAware::class);
-        $this->assertSame($loggerAware, $loggerAware->setNullLogger());
+        $loggerAware->setNullLogger();
+        $this->assertInstanceOf(NullLogger::class, $loggerAware->getLogger());
     }
 }

@@ -83,7 +83,7 @@ class ErrorHandler extends LoggerAware
                     'file' => $errorFile,
                     'line' => $errorLine,
                 ];
-                $this->logger->warning($message, $context);
+                $this->getLogger()->warning($message, $context);
                 return true;
             default:
                 throw new ErrorException($message, 0, $errorLevel, $errorFile, $errorLine);
@@ -136,7 +136,7 @@ class ErrorHandler extends LoggerAware
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
         ];
-        $this->logger->error($message, $context);
+        $this->getLogger()->error($message, $context);
     }
 
     private function emitResponseIfPossible(ResponseInterface $response): void

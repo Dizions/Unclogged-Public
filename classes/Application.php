@@ -18,7 +18,6 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 
 class Application extends LoggerAware
 {
@@ -39,7 +38,11 @@ class Application extends LoggerAware
         $this->request = $request;
         $this->setFactoryFunction(
             ErrorHandler::class,
-            fn ($app) => (new ErrorHandler($app))->setLogger($app->getLogger())
+            function ($app) {
+                $errorHandler = new ErrorHandler($app);
+                $errorHandler->setLogger($app->getLogger());
+                return $errorHandler;
+            }
         );
         $this->setFactoryFunction(EmitterInterface::class, fn () => new SapiEmitter());
     }
@@ -76,11 +79,6 @@ class Application extends LoggerAware
     public function getErrorHandler(): ErrorHandler
     {
         return $this->errorHandler ??= $this->createNew(ErrorHandler::class);
-    }
-
-    public function getLogger(): LoggerInterface
-    {
-        return $this->logger;
     }
 
     public function getDatabase(): Database

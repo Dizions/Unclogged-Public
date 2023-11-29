@@ -10,21 +10,20 @@ use Psr\Log\NullLogger;
 
 abstract class LoggerAware implements LoggerAwareInterface
 {
-    /**
-     * @param LoggerInterface $logger
-     * @return static $this
-     */
-    public function setLogger(LoggerInterface $logger): self
+    private LoggerInterface $logger;
+
+    public function getLogger(): LoggerInterface
     {
-        $this->logger = $logger;
-        return $this;
+        return $this->logger;
     }
 
-    /**
-     * @return static $this
-     */
-    public function setNullLogger(): self
+    public function setLogger(LoggerInterface $logger): void
     {
-        return $this->setLogger(new NullLogger());
+        $this->logger = $logger;
+    }
+
+    public function setNullLogger(): void
+    {
+        $this->setLogger(new NullLogger());
     }
 }

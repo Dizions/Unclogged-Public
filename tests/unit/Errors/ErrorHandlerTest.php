@@ -7,6 +7,7 @@ namespace Dizions\Unclogged\Errors;
 use Dizions\Unclogged\TestCase;
 use ErrorException;
 use Exception;
+use Laminas\Diactoros\Stream;
 use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -120,8 +121,9 @@ final class ErrorHandlerTest extends TestCase
 
     public function testExceptionHandlerEchoesResponseBodyIfResponseCannotBeEmitted(): void
     {
+        $responseStream = new Stream("data://text/plain,response body");
         $response = $this->createMock(ResponseInterface::class);
-        $response->expects($this->once())->method('getBody')->will($this->returnValue('response body'));
+        $response->expects($this->once())->method('getBody')->will($this->returnValue($responseStream));
         $emitter = $this->createMock(EmitterInterface::class);
         $emitter->expects($this->once())->method('emit')->will($this->throwException(new Exception()));
         $app = $this->createEmptyApplication();
