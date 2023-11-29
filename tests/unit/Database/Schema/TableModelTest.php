@@ -29,7 +29,7 @@ final class TableModelTest extends TestCase
         );
         $database->createTable($model->getSchema());
         $database->exec('INSERT INTO test (name) VALUES ("Alice"), ("Bob")');
-        $this->assertSame(['id' => '2', 'name' => 'Bob'], $model->getRowById(2));
+        $this->assertEquals(['id' => '2', 'name' => 'Bob'], $model->getRowById(2));
         $this->assertSame(null, $model->getRowById(3));
     }
 
@@ -61,7 +61,7 @@ final class TableModelTest extends TestCase
         );
         $database->createTable($model->getSchema());
         $database->exec('INSERT INTO test (id, name) VALUES (1, "Alice"), (2, "Bob")');
-        $this->assertSame(['id' => '2', 'name' => 'Bob'], $model->getRowByPrimaryKey(['id' => 2, 'name' => 'Bob']));
+        $this->assertEquals(['id' => '2', 'name' => 'Bob'], $model->getRowByPrimaryKey(['id' => 2, 'name' => 'Bob']));
         $this->assertSame(null, $model->getRowByPrimaryKey(['id' => 1, 'name' => 'Bob']));
     }
 

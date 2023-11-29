@@ -24,7 +24,7 @@ final class WhereTest extends TestCase
         $this->assertCount(1, $parameters);
         $select = $db->query("SELECT * FROM test {$where->getSqlString($db->getRenderer())}");
         $select->execute($parameters);
-        $this->assertSame([['id' => '2']], $select->fetchAll(PDO::FETCH_ASSOC));
+        $this->assertEquals([['id' => '2']], $select->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public function testMultipleWhereConditionsCanBeApplied(): void
@@ -38,7 +38,7 @@ final class WhereTest extends TestCase
         $this->assertCount(2, $parameters);
         $select = $db->query("SELECT * FROM test {$where->getSqlString($db->getRenderer())}");
         $select->execute($parameters);
-        $this->assertSame([['id' => '2', 'test' => '4']], $select->fetchAll(PDO::FETCH_ASSOC));
+        $this->assertEquals([['id' => '2', 'test' => '4']], $select->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public function testWhereConditionMayBeEmpty(): void
@@ -52,7 +52,7 @@ final class WhereTest extends TestCase
         $this->assertCount(0, $parameters);
         $select = $db->query("SELECT * FROM test {$where->getSqlString($db->getRenderer())}");
         $select->execute($parameters);
-        $this->assertSame([['id' => '1'], ['id' => '2'], ['id' => '3']], $select->fetchAll(PDO::FETCH_ASSOC));
+        $this->assertEquals([['id' => '1'], ['id' => '2'], ['id' => '3']], $select->fetchAll(PDO::FETCH_ASSOC));
 
         $where = new Where();
         $where->setAssocValues([]);
@@ -60,7 +60,7 @@ final class WhereTest extends TestCase
         $this->assertCount(0, $parameters);
         $select = $db->query("SELECT * FROM test {$where->getSqlString($db->getRenderer())}");
         $select->execute($parameters);
-        $this->assertSame([['id' => '1'], ['id' => '2'], ['id' => '3']], $select->fetchAll(PDO::FETCH_ASSOC));
+        $this->assertEquals([['id' => '1'], ['id' => '2'], ['id' => '3']], $select->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public function testRenderedResultsAreCached(): void

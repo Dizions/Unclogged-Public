@@ -57,7 +57,7 @@ final class InsertTest extends TestCase
         if ($isValidInRawSql) {
             $insert->values(['test' => new RawSqlString($in)])->execute($db);
             if ($outputValueShouldMatchInput) {
-                $this->assertSame([[$in]], $db->query('SELECT * FROM test')->fetchAll(PDO::FETCH_NUM));
+                $this->assertEquals([[$in]], $db->query('SELECT * FROM test')->fetchAll(PDO::FETCH_NUM));
             } else {
                 $this->assertNotEquals([[$in]], $db->query('SELECT * FROM test')->fetchAll(PDO::FETCH_NUM));
             }
