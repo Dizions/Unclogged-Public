@@ -38,18 +38,28 @@ final class IpAddressRangeTest extends TestCase
      * @dataProvider ip4StartAddressProvider
      * @dataProvider ip6StartAddressProvider
      */
-    public function testStartAddressIsDeterminedCorrectly(string $range, string $expected): void
+    public function testStartAddressIsDeterminedCorrectly(string $range, $expected): void
     {
-        $this->assertEquals($expected, (new IpAddressRange($range))->getStartAddr());
+        $actual = (new IpAddressRange($range))->getStartAddr();
+        if (is_array($expected)) {
+            $this->assertContains($actual, $expected);
+            return;
+        }
+        $this->assertEquals($expected, $actual);
     }
 
     /**
      * @dataProvider ip4EndAddressProvider
      * @dataProvider ip6EndAddressProvider
      */
-    public function testEndAddressIsDeterminedCorrectly(string $range, string $expected): void
+    public function testEndAddressIsDeterminedCorrectly(string $range, $expected): void
     {
-        $this->assertEquals($expected, (new IpAddressRange($range))->getEndAddr());
+        $actual = (new IpAddressRange($range))->getEndAddr();
+        if (is_array($expected)) {
+            $this->assertContains($actual, $expected);
+            return;
+        }
+        $this->assertEquals($expected, $actual);
     }
 
     public function testContainsMatchesSingleIp4Address(): void
@@ -115,7 +125,7 @@ final class IpAddressRangeTest extends TestCase
             ['::/0', '::'],
             ['::/128', '::'],
             ['1:2:3:4:5:6:7:8', '1:2:3:4:5:6:7:8'],
-            ['::10.0.0.1', '::10.0.0.1'],
+            ['::10.0.0.1', ['::10.0.0.1', '::a00:1']],
             ['::10.0.0.1/24', '::'],
             ['1:2:3:4:5:6:7:8/128', '1:2:3:4:5:6:7:8'],
             ['1:2:3:4:5:6:7:8/64', '1:2:3:4::'],
@@ -151,7 +161,7 @@ final class IpAddressRangeTest extends TestCase
             ['::/0', 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'],
             ['::/128', '::'],
             ['1:2:3:4:5:6:7:8', '1:2:3:4:5:6:7:8'],
-            ['::10.0.0.1', '::10.0.0.1'],
+            ['::10.0.0.1', ['::10.0.0.1', '::a00:1']],
             ['::10.0.0.1/24', '0:ff:ffff:ffff:ffff:ffff:ffff:ffff'],
             ['1:2:3:4:5:6:7:8/128', '1:2:3:4:5:6:7:8'],
             ['1:2:3:4:5:6:7:8/64', '1:2:3:4:ffff:ffff:ffff:ffff'],

@@ -117,6 +117,7 @@ final class DatabaseTest extends TestCase
             {
                 return new BasicConnectionParameters('mysql', []);
             }
+            #[\ReturnTypeWillChange]
             public function exec($query)
             {
                 $this->execLog[] = $query;
