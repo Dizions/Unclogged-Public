@@ -1,0 +1,44 @@
+include:
+  - project: 'dizions/deployment/build-environment'
+    file:
+      - 'ci-templates/phpunit.yml'
+variables:
+  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/composer-cache/"
+
+workflow:
+  rules:
+    # If the pipeline is running on a branch and there is an open merge request, don't run the
+    # branch pipeline, to prevent duplicates, but do run the merge request pipeline.
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - when: always
+
+stages:
+  - test
+
+.test-base:
+  extends: .coverage-test
+  script:
+    - vendor/bin/phpunit
+    - "coverage=$(sed -n 's/^.*Lines:   \\([0-9]*.[0-9]*\\)% .*$/\\1/p' < tests/output/coverage/summary.txt)"
+    - if [ $coverage != '100.00' ]; then echo "Coverage dropped to $coverage%"; exit 255; fi
+
+test:7.4:
+  extends: .test-base
+  variables:
+    PHP_VERSION: "7.4"
+
+test:8.0:
+  extends: .test-base
+  variables:
+    PHP_VERSION: "8.0"
+
+test:8.1:
+  extends: .test-base
+  variables:
+    PHP_VERSION: "8.1"
+
+test:8.2:
+  extends: .test-base
+  variables:
+    PHP_VERSION: "8.2"

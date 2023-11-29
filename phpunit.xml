@@ -19,8 +19,15 @@
         </testsuite>
     </testsuites>
 
+    <logging>
+        <junit outputFile="tests/output/test-results.xml"/>
+    </logging>
     <coverage cacheDirectory="tests/output/code-coverage"
               processUncoveredFiles="false">
+        <report>
+            <html outputDirectory="tests/output/coverage"/>
+            <text outputFile="tests/output/coverage/summary.txt"/>
+        </report>
         <include>
             <directory suffix=".php">classes</directory>
         </include>
