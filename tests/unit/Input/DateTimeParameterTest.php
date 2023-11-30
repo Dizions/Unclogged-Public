@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 use DateTime;
 use DateTimeZone;
 use stdClass;
 
 /**
- * @covers Dizions\Unclogged\Request\DateTimeParameter
+ * @covers Dizions\Unclogged\Input\DateTimeParameter
  */
 final class DateTimeParameterTest extends TestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 class IntParameter extends Parameter
 {

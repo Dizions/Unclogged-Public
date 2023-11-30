@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 /**
  * A request parameter which will be validated and retrieved as a bool. Rather than simply
@@ -15,7 +15,7 @@ namespace Dizions\Unclogged\Request;
  * certain circumstances, for example if the body is provided as a JSON array, so int 1/0 and bool
  * true/false are supported.)
  *
- * @package Dizions\Unclogged\Request
+ * @package Dizions\Unclogged\Input
  */
 class BooleanParameter extends Parameter
 {

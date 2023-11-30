@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 /**
- * @covers Dizions\Unclogged\Request\IpAddressParameter
+ * @covers Dizions\Unclogged\Input\IpAddressParameter
  */
 final class IpAddressParameterTest extends TestCase
 {

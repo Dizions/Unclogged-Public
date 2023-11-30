@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 /**
- * @covers Dizions\Unclogged\Request\IntParameter
+ * @covers Dizions\Unclogged\Input\IntParameter
  */
 final class IntParameterTest extends TestCase
 {

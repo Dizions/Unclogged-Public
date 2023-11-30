@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
+use Dizions\Unclogged\Request\Request;
 use Laminas\Diactoros\ServerRequestFactory;
 
 /**
- * @covers Dizions\Unclogged\Request\Parameter
+ * @covers Dizions\Unclogged\Input\Parameter
  */
 final class ParameterTest extends TestCase
 {

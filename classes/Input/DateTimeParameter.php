@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
-use Dizions\Unclogged\Errors\HttpBadRequestException;
 
 class DateTimeParameter extends Parameter
 {
@@ -24,9 +23,7 @@ class DateTimeParameter extends Parameter
     }
 
     /**
-     * @return DateTimeInterface in UTC
-     * @throws HttpBadRequestException
-     * @throws UnknownContentTypeException
+     * @return null | DateTimeInterface in UTC
      * @throws MissingParameterException
      * @throws InvalidParameterException
      */
@@ -45,8 +42,6 @@ class DateTimeParameter extends Parameter
     /**
      * @param string $format If the value is non-empty, use this format to convert to a string
      * @return string in UTC
-     * @throws HttpBadRequestException
-     * @throws UnknownContentTypeException
      * @throws MissingParameterException
      * @throws InvalidParameterException
      */

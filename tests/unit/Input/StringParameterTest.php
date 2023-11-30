@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 /**
- * @covers Dizions\Unclogged\Request\StringParameter
+ * @covers Dizions\Unclogged\Input\StringParameter
  */
 final class StringParameterTest extends TestCase
 {

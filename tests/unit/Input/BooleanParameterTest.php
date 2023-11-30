@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 /**
- * @covers Dizions\Unclogged\Request\BooleanParameter
+ * @covers Dizions\Unclogged\Input\BooleanParameter
  */
 final class BooleanParameterTest extends TestCase
 {

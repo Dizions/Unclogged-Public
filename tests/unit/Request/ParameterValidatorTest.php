@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace Dizions\Unclogged\Request;
 
 use DateTimeInterface;
+use Dizions\Unclogged\Input\BooleanParameter;
+use Dizions\Unclogged\Input\DateTimeParameter;
+use Dizions\Unclogged\Input\IntParameter;
+use Dizions\Unclogged\Input\IpAddressParameter;
+use Dizions\Unclogged\Input\MissingParameterException;
+use Dizions\Unclogged\Input\StringParameter;
 use Dizions\Unclogged\TestCase;
 
 /**

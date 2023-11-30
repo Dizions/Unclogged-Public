@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Input;
 
 abstract class Parameter
 {
@@ -17,12 +17,16 @@ abstract class Parameter
     /** @var callable[] */
     private array $validators;
 
-    public function __construct(string $name, ?Request $request = null)
+    public function __construct(string $name, iterable $data = [])
     {
         $this->name = $name;
         $this->validators = $this->getDefaultValidators();
-        if ($request) {
-            $this->setData($request->getAllParams(), 'request');
+        if ($data) {
+            $dataArray = [];
+            foreach ($data as $key => $value) {
+                $dataArray[$key] = $value;
+            }
+            $this->setData($dataArray);
         }
     }
 
