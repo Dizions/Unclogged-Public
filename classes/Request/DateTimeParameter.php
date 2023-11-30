@@ -17,14 +17,6 @@ class DateTimeParameter extends Parameter
 
     private bool $allowEmpty = false;
 
-    public function __construct(string $name, Request $request)
-    {
-        parent::__construct($name, $request);
-        $this->addValidator(
-            fn ($x) => $this->isValidEmptyValue($x) || $this->isDateTimeInterface($x) || $this->isParseable($x)
-        );
-    }
-
     public function allowEmpty(): self
     {
         $this->allowEmpty = true;
@@ -68,6 +60,13 @@ class DateTimeParameter extends Parameter
             $value = $value->format(DateTimeInterface::ATOM);
         }
         return (new DateTimeImmutable($value))->setTimezone(new DateTimeZone('UTC'))->format($format);
+    }
+
+    protected function getDefaultValidators(): array
+    {
+        return [
+            fn ($x) => $this->isValidEmptyValue($x) || $this->isDateTimeInterface($x) || $this->isParseable($x),
+        ];
     }
 
     protected function isEmpty($in): bool

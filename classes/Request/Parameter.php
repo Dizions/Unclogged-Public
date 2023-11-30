@@ -18,11 +18,12 @@ abstract class Parameter
     private $default;
     private array $options;
     /** @var callable[] */
-    private array $validators = [];
+    private array $validators;
 
     public function __construct(string $name, Request $request)
     {
         $this->name = $name;
+        $this->validators = $this->getDefaultValidators();
         $this->setRequest($request);
         $this->setData($request->getAllParams(), 'request');
     }
@@ -129,6 +130,11 @@ abstract class Parameter
     public function __toString(): string
     {
         return (string)$this->get();
+    }
+
+    protected function getDefaultValidators(): array
+    {
+        return [];
     }
 
     protected function getName(): string
