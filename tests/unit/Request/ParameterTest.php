@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Request;
 
-use Dizions\Unclogged\TestCase;
+use Laminas\Diactoros\ServerRequestFactory;
 
 /**
  * @covers Dizions\Unclogged\Request\Parameter
@@ -45,20 +45,20 @@ final class ParameterTest extends TestCase
 
     public function testParameterCanBeRetrievedFromQueryStringOrBody(): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => 1, 'b' => 2]));
-        $request->expects($this->any())->method('getBodyParams')->will($this->returnValue(['a' => 1]));
-        $request->expects($this->any())->method('getQueryParams')->will($this->returnValue(['b' => 2]));
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $requestFactory = new ServerRequestFactory();
+        $request = new Request(
+            $requestFactory->createServerRequest('POST', '/?a=x', $server)->withParsedBody(['b' => 'y'])
+        );
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', $request]);
-        $this->assertSame(1, $parameter->get());
+        $this->assertSame('x', $parameter->get());
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['b', $request]);
-        $this->assertSame(2, $parameter->get());
+        $this->assertSame('y', $parameter->get());
     }
 
     public function testValidOptionsCanBeSpecified(): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => 1, 'b' => 2]));
+        $request = $this->getPostRequest(['a' => 1, 'b' => 2]);
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', $request]);
         $this->assertSame(1, $parameter->options([1, 2, 3])->get());
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['b', $request]);
@@ -68,8 +68,7 @@ final class ParameterTest extends TestCase
 
     public function testCustomValidatorCanBeRefined(): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => 1]));
+        $request = $this->getPostRequest(['a' => 1]);
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', $request]);
         $parameter->addValidator(fn () =>  true);
         $this->assertSame(1, $parameter->get());
@@ -81,8 +80,7 @@ final class ParameterTest extends TestCase
 
     public function testCustomValidatorsMustAllPass(): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => 1]));
+        $request = $this->getPostRequest(['a' => 1]);
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', $request]);
         $parameter->addValidator(fn () =>  true);
         $parameter->addValidator(fn () =>  false);

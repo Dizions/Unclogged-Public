@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Request;
 
-use Dizions\Unclogged\TestCase;
-
 /**
  * @covers Dizions\Unclogged\Request\IpAddressParameter
  */
@@ -14,9 +12,7 @@ final class IpAddressParameterTest extends TestCase
     /** @dataProvider invalidValuesProvider */
     public function testInvalidValuesAreRejected($in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new IpAddressParameter('a', $request);
+        $parameter = new IpAddressParameter('a', $this->getPostRequest(['a' => $in]));
         $this->expectException(InvalidParameterException::class);
         $parameter->get();
     }
@@ -24,9 +20,7 @@ final class IpAddressParameterTest extends TestCase
     /** @dataProvider validValuesProvider */
     public function testValidValuesAreAccepted(string $in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new IpAddressParameter('a', $request);
+        $parameter = new IpAddressParameter('a', $this->getPostRequest(['a' => $in]));
         $this->assertSame($in, $parameter->get());
     }
 

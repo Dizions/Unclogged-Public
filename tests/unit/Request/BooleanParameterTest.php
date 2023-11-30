@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Request;
 
-use Dizions\Unclogged\TestCase;
-
 /**
  * @covers Dizions\Unclogged\Request\BooleanParameter
  */
@@ -14,27 +12,21 @@ final class BooleanParameterTest extends TestCase
     /** @dataProvider truthyValuesProvider */
     public function testTruthyValuesAreConvertedToTrue($in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new BooleanParameter('a', $request);
+        $parameter = new BooleanParameter('a', $this->getPostRequest(['a' => $in]));
         $this->assertTrue($parameter->get());
     }
 
     /** @dataProvider falsyValuesProvider */
     public function testFalsyValuesAreConvertedToFalse($in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new BooleanParameter('a', $request);
+        $parameter = new BooleanParameter('a', $this->getPostRequest(['a' => $in]));
         $this->assertFalse($parameter->get());
     }
 
     /** @dataProvider nonBooleanValuesProvider */
     public function testNonBooleanValuesAreInvalid($in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new BooleanParameter('a', $request);
+        $parameter = new BooleanParameter('a', $this->getPostRequest(['a' => $in]));
         $this->expectException(InvalidParameterException::class);
         $parameter->get();
     }

@@ -6,7 +6,6 @@ namespace Dizions\Unclogged\Request;
 
 use DateTime;
 use DateTimeZone;
-use Dizions\Unclogged\TestCase;
 use stdClass;
 
 /**
@@ -20,9 +19,7 @@ final class DateTimeParameterTest extends TestCase
      */
     public function testEmptyAndInvalidValuesAreRejectedByDefault($in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new DateTimeParameter('a', $request);
+        $parameter = new DateTimeParameter('a', $this->getPostRequest(['a' => $in]));
         $this->expectException(InvalidParameterException::class);
         $parameter->get();
     }
@@ -30,9 +27,7 @@ final class DateTimeParameterTest extends TestCase
     /** @dataProvider invalidValuesProvider */
     public function testInvalidValuesAreAlwaysRejected($in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new DateTimeParameter('a', $request);
+        $parameter = new DateTimeParameter('a', $this->getPostRequest(['a' => $in]));
         $this->expectException(InvalidParameterException::class);
         $parameter->allowEmpty()->get();
     }
@@ -40,27 +35,21 @@ final class DateTimeParameterTest extends TestCase
     /** @dataProvider emptyValuesProvider */
     public function testAllowedEmptyValuesAreConvertedToNull($in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new DateTimeParameter('a', $request);
+        $parameter = new DateTimeParameter('a', $this->getPostRequest(['a' => $in]));
         $this->assertNull($parameter->allowEmpty()->get());
     }
 
     /** @dataProvider emptyValuesProvider */
     public function testAllowedEmptyValuesAreConvertedToStringButOtherwiseUnchanged($in): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new DateTimeParameter('a', $request);
+        $parameter = new DateTimeParameter('a', $this->getPostRequest(['a' => $in]));
         $this->assertSame((string)$in, $parameter->allowEmpty()->getString());
     }
 
     /** @dataProvider validNonEmptyValuesProvider */
     public function testValidValuesAreConvertedToCorrectString($in, string $default, string $atom): void
     {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => $in]));
-        $parameter = new DateTimeParameter('a', $request);
+        $parameter = new DateTimeParameter('a', $this->getPostRequest(['a' => $in]));
         $this->assertSame($default, $parameter->getString());
         $this->assertSame($atom, $parameter->getString(DateTime::ATOM));
         $this->assertSame($atom, $parameter->get()->format(DateTime::ATOM));
