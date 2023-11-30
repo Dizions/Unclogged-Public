@@ -70,10 +70,16 @@ class Environment
      * @param mixed $value
      * @return static
      */
-    public function withVariable(string $key, $value): self
+    public function with(string $key, $value): self
     {
         $new = clone $this;
         return $new->set($key, $value);
+    }
+
+    /** @see with() */
+    public function withVariable(string $key, $value): self
+    {
+        return $this->with($key, $value);
     }
 
     /** @return static */

@@ -82,6 +82,12 @@ final class EnvironmentTest extends TestCase
         $new = $env->withVariable('FOO', 'foo');
         $this->assertNull($env->get('FOO'));
         $this->assertSame('foo', $new->get('FOO'));
+
+        $env = new Environment([]);
+        $env->clear('FOO');
+        $new = $env->with('FOO', 'foo');
+        $this->assertNull($env->get('FOO'));
+        $this->assertSame('foo', $new->get('FOO'));
     }
 
     public function testCanClearVariable(): void
