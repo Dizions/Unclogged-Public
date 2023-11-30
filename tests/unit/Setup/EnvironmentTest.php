@@ -14,41 +14,41 @@ final class EnvironmentTest extends TestCase
 {
     public function testCanBeConstructedWithEmptySearchPath(): void
     {
-        $this->assertInstanceOf(Environment::class, new Environment());
-        $this->assertInstanceOf(Environment::class, new Environment([]));
+        $this->assertInstanceOf(Environment::class, Environment::fromGlobal());
+        $this->assertInstanceOf(Environment::class, Environment::fromGlobal()->load([]));
     }
 
     public function testCanBeConstructedWithCustomSearchPath(): void
     {
         $this->assertInstanceOf(
             Environment::class,
-            (new Environment())->load([$this->setupTestEnvironmentDirectory()])
+            Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()])
         );
     }
 
     public function testMultipleFilesCanBeRead(): void
     {
-        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
+        $env = Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertSame('a', $env->get('A'));
         $this->assertSame('b', $env->get('B'));
     }
 
     public function testNonDotEnvFilesAreIgnored(): void
     {
-        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
+        $env = Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertNull($env->get('C'));
         $this->assertNull($env->get('D'));
     }
 
     public function testLaterFilesOverrideEarlierOnes(): void
     {
-        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
+        $env = Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertSame('overridden', $env->get('X'));
     }
 
     public function testJsonIsDecoded(): void
     {
-        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
+        $env = Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertSame([1, 'a'], $env->get('JSON'));
     }
 
@@ -83,13 +83,13 @@ final class EnvironmentTest extends TestCase
 
     public function testCanAddVariableToNewEnvironmentWithoutMutatingOriginal(): void
     {
-        $env = new Environment([]);
+        $env = Environment::fromGlobal();
         $env->clear('FOO');
         $new = $env->withVariable('FOO', 'foo');
         $this->assertNull($env->get('FOO'));
         $this->assertSame('foo', $new->get('FOO'));
 
-        $env = new Environment([]);
+        $env = Environment::fromGlobal();
         $env->clear('FOO');
         $new = $env->with('FOO', 'foo');
         $this->assertNull($env->get('FOO'));
@@ -114,10 +114,10 @@ final class EnvironmentTest extends TestCase
 
     public function testMergingEnvironmentsKeepsValuesFromSecondWhenThereAreConflicts(): void
     {
-        $first = new Environment([]);
+        $first = Environment::fromGlobal();
         $first->set(__METHOD__ . 'A', 'a');
         $first->set(__METHOD__ . 'C', 'a');
-        $second = new Environment([]);
+        $second = Environment::fromGlobal();
         $second->set(__METHOD__ . 'B', 'b');
         $second->set(__METHOD__ . 'C', 'b');
         $merged = $first->merge($second);
@@ -128,13 +128,21 @@ final class EnvironmentTest extends TestCase
 
     public function testMergingEnvironmentsDoesntMutateOriginals(): void
     {
-        $first = new Environment([]);
+        $first = Environment::fromGlobal();
         $first->set(__METHOD__ . 'A', 'a');
-        $second = new Environment([]);
+        $second = Environment::fromGlobal();
         $second->set(__METHOD__ . 'B', 'b');
         $first->merge($second);
         $this->assertNull($first->get(__METHOD__ . 'B'));
         $this->assertNull($second->get(__METHOD__ . 'A'));
+    }
+
+    public function testDefaultsCanBeSetWithoutOverridingExistingVariables(): void
+    {
+        $env = Environment::fromGlobal(['FOO' => 'foo']);
+        $env->setDefaults(['FOO' => 'bar', 'BAR' => 'bar']);
+        $this->assertSame('foo', $env->get('FOO'));
+        $this->assertSame('bar', $env->get('BAR'));
     }
 
     public function testVariablesCanBeValidated(): void

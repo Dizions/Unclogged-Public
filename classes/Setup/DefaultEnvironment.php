@@ -6,7 +6,7 @@ namespace Dizions\Unclogged\Setup;
 
 class DefaultEnvironment extends Environment
 {
-    /** @var $defaults Fallback values for any variables not found in the environment */
+    /** @var array $defaults Fallback values for any variables not found in the environment */
     protected array $defaults = [
         'APPLICATION_NAME' => null,
         // Prepended to the names of database tables used for key-based auth.
@@ -22,24 +22,18 @@ class DefaultEnvironment extends Environment
          */
         'TRUSTED_PROXIES' => ['127.0.0.1', '::1', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'],
     ];
-    private string $documentRoot;
 
-    public function __construct(string $documentRoot)
+    public function __construct(?array $env = null)
     {
-        parent::__construct();
-        $this->documentRoot = $documentRoot;
-        foreach ($this->defaults as $k => $v) {
-            if ($this->get($k) === null) {
-                // This variable wasn't found in the real environment
-                $this->set($k, $v);
-            }
-        }
+        parent::__construct($env);
+        $this->setDefaults($this->defaults);
     }
 
-    public function getEnvironment(): Environment
+    public function getEnvironment(string $documentRoot): Environment
     {
         return $this->merge(
-            (new Environment())->load($this->get('ENVIRONMENT_SEARCH_PATHS') ?? $this->searchPaths())
+            Environment::fromGlobal([])
+                ->load($this->get('ENVIRONMENT_SEARCH_PATHS') ?? $this->searchPaths($documentRoot))
         );
     }
 
@@ -49,8 +43,13 @@ class DefaultEnvironment extends Environment
      *
      * @return string[]
      */
-    private function searchPaths(): array
+    private function searchPaths(string $documentRoot): array
     {
-        return ["$this->documentRoot/../environments/", '/run/secrets/'];
+        return [
+            $documentRoot,
+            "$documentRoot/..",
+            "$documentRoot/../environments/",
+            '/run/secrets/',
+        ];
     }
 }

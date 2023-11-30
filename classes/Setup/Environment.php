@@ -79,6 +79,22 @@ class Environment
     }
 
     /**
+     * Set default values for any variables not already set
+     *
+     * @param array $defaults
+     * @return $this
+     */
+    public function setDefaults(array $defaults): self
+    {
+        foreach ($defaults as $key => $value) {
+            if (!isset($this->variables[$key])) {
+                $this->variables[$key] = $value;
+            }
+        }
+        return $this;
+    }
+
+    /**
      * Create a new Environment with $key set to $value
      *
      * @param string $key

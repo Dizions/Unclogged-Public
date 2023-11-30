@@ -15,7 +15,7 @@ abstract class TestCase extends BaseTestCase
 {
     protected function getDefaultEnvironment(): Environment
     {
-        return (new DefaultEnvironment(''))->set('ENVIRONMENT_SEARCH_PATHS', [])->getEnvironment();
+        return DefaultEnvironment::fromGlobal([]);
     }
 
     protected function createEmptyApplication(): Application

@@ -13,11 +13,14 @@ final class DefaultEnvironmentTest extends TestCase
 {
     public function testCanBeConstructed(): void
     {
-        $this->assertInstanceOf(DefaultEnvironment::class, new DefaultEnvironment(''));
+        $this->assertInstanceOf(DefaultEnvironment::class, DefaultEnvironment::fromGlobal());
     }
 
     public function testCanGenerateFinalEnvironment(): void
     {
-        $this->assertInstanceOf(Environment::class, (new DefaultEnvironment(''))->getEnvironment());
+        $this->assertInstanceOf(
+            Environment::class,
+            DefaultEnvironment::fromGlobal()->getEnvironment('')
+        );
     }
 }
