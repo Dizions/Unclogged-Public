@@ -16,10 +16,8 @@ class RequestFactory
         $this->trustedProxies = $env->get('TRUSTED_PROXIES') ?? [];
     }
 
-    /**
-     * Create a Request object with its server info adjusted to hide the details of any proxies.
-     */
-    public function proxiedRequestFromGlobals(
+    /** Create a Request object with its server info adjusted to hide the details of any proxies. */
+    public function fromGlobals(
         array $server = null,
         array $get = null,
         array $post = null,
@@ -32,6 +30,17 @@ class RequestFactory
         $server = $this->adjustRemoteAddress($server);
         $serverRequest = ServerRequestFactory::fromGlobals($server, $get, $post, $cookie, $files);
         return new Request($serverRequest);
+    }
+
+    /** @deprecated */
+    public function proxiedRequestFromGlobals(
+        array $server = null,
+        array $get = null,
+        array $post = null,
+        array $cookie = null,
+        array $files = null
+    ): Request {
+        return $this->fromGlobals($server, $get, $post, $cookie, $files);
     }
 
     private function adjustRemoteAddress(array $serverParams): array

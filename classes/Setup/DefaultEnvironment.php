@@ -18,6 +18,10 @@ class DefaultEnvironment extends Environment
         'ENVIRONMENT_SEARCH_PATHS' => null,
         'MYSQL_CHARSET' => 'utf8mb4',
         'MYSQL_TIMEOUT' => '3',
+        /**
+         * Used for determining the real source IP address of the request.
+         * @see RequestFactory::fromGlobals()
+         */
         'TRUSTED_PROXIES' => ['127.0.0.1', '::1', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'],
     ];
 
