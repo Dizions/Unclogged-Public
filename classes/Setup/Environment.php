@@ -35,12 +35,7 @@ class Environment
      */
     public function __construct(iterable $environmentFilePaths = [])
     {
-        foreach ($environmentFilePaths as $envDir) {
-            if (FilesystemHelpers::isDir($envDir)) {
-                $this->variables = array_merge($this->variables, $this->getVariablesFromDirectory($envDir));
-            }
-        }
-        $this->variables = array_map(fn ($v) => $this->decode($v), $this->variables);
+        $this->load($environmentFilePaths);
     }
 
     /**
@@ -62,6 +57,18 @@ class Environment
         $globalEnv = getenv();
         $env = array_merge($globalEnv, $this->variables);
         return (new ParameterValidator())->setData($env, 'environment');
+    }
+
+    /** @param iterable $environmentFilePaths Load all .env files in the given paths, in order */
+    public function load(iterable $environmentFilePaths): self
+    {
+        foreach ($environmentFilePaths as $envDir) {
+            if (FilesystemHelpers::isDir($envDir)) {
+                $this->variables = array_merge($this->variables, $this->getVariablesFromDirectory($envDir));
+            }
+        }
+        $this->variables = array_map(fn ($v) => $this->decode($v), $this->variables);
+        return $this;
     }
 
     /** @return static */

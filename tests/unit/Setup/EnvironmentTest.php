@@ -20,32 +20,35 @@ final class EnvironmentTest extends TestCase
 
     public function testCanBeConstructedWithCustomSearchPath(): void
     {
-        $this->assertInstanceOf(Environment::class, new Environment([$this->setupTestEnvironmentDirectory()]));
+        $this->assertInstanceOf(
+            Environment::class,
+            (new Environment())->load([$this->setupTestEnvironmentDirectory()])
+        );
     }
 
     public function testMultipleFilesCanBeRead(): void
     {
-        $env = new Environment([$this->setupTestEnvironmentDirectory()]);
+        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertSame('a', $env->get('A'));
         $this->assertSame('b', $env->get('B'));
     }
 
     public function testNonDotEnvFilesAreIgnored(): void
     {
-        $env = new Environment([$this->setupTestEnvironmentDirectory()]);
+        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertNull($env->get('C'));
         $this->assertNull($env->get('D'));
     }
 
     public function testLaterFilesOverrideEarlierOnes(): void
     {
-        $env = new Environment([$this->setupTestEnvironmentDirectory()]);
+        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertSame('overridden', $env->get('X'));
     }
 
     public function testJsonIsDecoded(): void
     {
-        $env = new Environment([$this->setupTestEnvironmentDirectory()]);
+        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertSame([1, 'a'], $env->get('JSON'));
     }
 
@@ -60,7 +63,7 @@ final class EnvironmentTest extends TestCase
     public function testFilesOverrideEnvironment(): void
     {
         putenv('A=foo');
-        $env = new Environment([$this->setupTestEnvironmentDirectory()]);
+        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertSame('a', $env->get('A'));
     }
 

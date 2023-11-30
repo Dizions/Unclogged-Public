@@ -6,9 +6,7 @@ namespace Dizions\Unclogged\Setup;
 
 class DefaultEnvironment extends Environment
 {
-    /**
-     * @var $defaults Fallback values for any variables not found in the environment
-     */
+    /** @var $defaults Fallback values for any variables not found in the environment */
     protected array $defaults = [
         'APPLICATION_NAME' => null,
         // Prepended to the names of database tables used for key-based auth.
@@ -24,18 +22,6 @@ class DefaultEnvironment extends Environment
          */
         'TRUSTED_PROXIES' => ['127.0.0.1', '::1', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'],
     ];
-
-    /**
-     * The default list of search paths for environment files is set here because it needs to be
-     * dynamically generated.
-     *
-     * @return string[]
-     */
-    private function searchPaths(): array
-    {
-        return ["$this->documentRoot/../environments/", '/run/secrets/'];
-    }
-
     private string $documentRoot;
 
     public function __construct(string $documentRoot)
@@ -52,6 +38,19 @@ class DefaultEnvironment extends Environment
 
     public function getEnvironment(): Environment
     {
-        return $this->merge(new Environment($this->get('ENVIRONMENT_SEARCH_PATHS') ?? $this->searchPaths()));
+        return $this->merge(
+            (new Environment())->load($this->get('ENVIRONMENT_SEARCH_PATHS') ?? $this->searchPaths())
+        );
+    }
+
+    /**
+     * The default list of search paths for environment files is set here because it needs to be
+     * dynamically generated.
+     *
+     * @return string[]
+     */
+    private function searchPaths(): array
+    {
+        return ["$this->documentRoot/../environments/", '/run/secrets/'];
     }
 }
