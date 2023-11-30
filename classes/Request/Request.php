@@ -223,6 +223,11 @@ class Request implements ArrayAccess, Iterator
         throw new HttpBadRequestException('Expected JSON-encoded array in request body');
     }
 
+    /**
+     * @return void
+     * @throws HttpBadRequestException
+     * @throws UnknownContentTypeException
+     */
     private function initialiseAllParameters(): void
     {
         if (isset($this->allParams)) {

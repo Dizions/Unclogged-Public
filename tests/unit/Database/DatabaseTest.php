@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Dizions\Unclogged\Database;
 
 use Dizions\Unclogged\Database\Query\Query;
-use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, IncompatibleSchemaVersionException, TableSchema};
+use Dizions\Unclogged\Database\Schema\{ColumnSchema, ColumnType, TableSchema};
 use Dizions\Unclogged\Database\Schema\{TableDefinition, TableDefinitionInterface};
 use Dizions\Unclogged\TestCase;
 use PDO;
+use ReturnTypeWillChange;
 
 /**
  * @covers Dizions\Unclogged\Database\Database
@@ -117,7 +118,7 @@ final class DatabaseTest extends TestCase
             {
                 return new BasicConnectionParameters('mysql', []);
             }
-            #[\ReturnTypeWillChange]
+            #[ReturnTypeWillChange]
             public function exec($query)
             {
                 $this->execLog[] = $query;
