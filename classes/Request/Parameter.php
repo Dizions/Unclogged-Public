@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Request;
 
-use Dizions\Unclogged\Errors\HttpBadRequestException;
-
 abstract class Parameter
 {
     private string $name;
-    private Request $request;
     private array $data = [];
     private string $source = '';
 
@@ -20,12 +17,13 @@ abstract class Parameter
     /** @var callable[] */
     private array $validators;
 
-    public function __construct(string $name, Request $request)
+    public function __construct(string $name, ?Request $request = null)
     {
         $this->name = $name;
         $this->validators = $this->getDefaultValidators();
-        $this->setRequest($request);
-        $this->setData($request->getAllParams(), 'request');
+        if ($request) {
+            $this->setData($request->getAllParams(), 'request');
+        }
     }
 
     /**
@@ -51,25 +49,7 @@ abstract class Parameter
     }
 
     /**
-     * @throws HttpBadRequestException
-     * @throws UnknownContentTypeException
-     * return $this
-     */
-    public function fromBody(): self
-    {
-        return $this->setData($this->getRequest()->getBodyParams(), 'request body (POST)');
-    }
-
-    /** @return this */
-    public function fromQueryString(): self
-    {
-        return $this->setData($this->getRequest()->getQueryParams(), 'query string (GET)');
-    }
-
-    /**
      * @return mixed
-     * @throws HttpBadRequestException
-     * @throws UnknownContentTypeException
      * @throws MissingParameterException
      * @throws InvalidParameterException
      */
@@ -114,16 +94,7 @@ abstract class Parameter
         return $this;
     }
 
-    /** @return static */
-    public function setRequest(Request $request): self
-    {
-        $this->request = $request;
-        return $this;
-    }
-
     /**
-     * @throws HttpBadRequestException
-     * @throws UnknownContentTypeException
      * @throws MissingParameterException
      * @throws InvalidParameterException
      */
@@ -155,11 +126,6 @@ abstract class Parameter
     private function getData(): array
     {
         return $this->data;
-    }
-
-    private function getRequest(): Request
-    {
-        return $this->request;
     }
 
     /** @throws InvalidParameterException */

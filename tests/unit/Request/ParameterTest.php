@@ -55,32 +55,6 @@ final class ParameterTest extends TestCase
         $this->assertSame(2, $parameter->get());
     }
 
-    public function testParameterCanBeRetrievedFromQueryStringAlone(): void
-    {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => 1, 'b' => 2]));
-        $request->expects($this->any())->method('getBodyParams')->will($this->returnValue(['a' => 1]));
-        $request->expects($this->any())->method('getQueryParams')->will($this->returnValue(['b' => 2]));
-        $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', $request]);
-        $this->assertSame(1, $parameter->fromBody()->get());
-        $parameter = $this->getMockForAbstractClass(Parameter::class, ['b', $request]);
-        $this->expectException(MissingParameterException::class);
-        $parameter->fromBody()->get();
-    }
-
-    public function testParameterCanBeRetrievedFromBodyAlone(): void
-    {
-        $request = $this->createMock(Request::class);
-        $request->expects($this->any())->method('getAllParams')->will($this->returnValue(['a' => 1, 'b' => 2]));
-        $request->expects($this->any())->method('getBodyParams')->will($this->returnValue(['a' => 1]));
-        $request->expects($this->any())->method('getQueryParams')->will($this->returnValue(['b' => 2]));
-        $parameter = $this->getMockForAbstractClass(Parameter::class, ['b', $request]);
-        $this->assertSame(2, $parameter->fromQueryString()->get());
-        $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', $request]);
-        $this->expectException(MissingParameterException::class);
-        $parameter->fromQueryString()->get();
-    }
-
     public function testValidOptionsCanBeSpecified(): void
     {
         $request = $this->createMock(Request::class);
