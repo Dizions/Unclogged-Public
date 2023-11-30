@@ -8,13 +8,10 @@ use Dizions\Unclogged\Errors\HttpBadRequestException;
 
 abstract class Parameter
 {
-    private const FROM_ANYWHERE = 0;
-    private const FROM_QUERY_STRING = 1;
-    private const FROM_BODY = 2;
-
     private string $name;
     private Request $request;
-    private int $source = self::FROM_ANYWHERE;
+    private array $data = [];
+    private string $source = '';
 
     // Used to distinguished between "default is null" and "no default"
     private bool $isRequired = true;
@@ -26,7 +23,8 @@ abstract class Parameter
     public function __construct(string $name, Request $request)
     {
         $this->name = $name;
-        $this->request = $request;
+        $this->setRequest($request);
+        $this->setData($request->getAllParams(), 'request');
     }
 
     /**
@@ -51,18 +49,20 @@ abstract class Parameter
         return $this;
     }
 
-    /** @return static */
+    /**
+     * @throws HttpBadRequestException
+     * @throws UnknownContentTypeException
+     * return $this
+     */
     public function fromBody(): self
     {
-        $this->source = self::FROM_BODY;
-        return $this;
+        return $this->setData($this->getRequest()->getBodyParams(), 'request body (POST)');
     }
 
-    /** @return static */
+    /** @return this */
     public function fromQueryString(): self
     {
-        $this->source = self::FROM_QUERY_STRING;
-        return $this;
+        return $this->setData($this->getRequest()->getQueryParams(), 'query string (GET)');
     }
 
     /**
@@ -74,11 +74,14 @@ abstract class Parameter
      */
     public function get()
     {
-        $params = $this->getRequestParams();
+        $params = $this->getData();
         $name = $this->getName();
         if (!array_key_exists($name, $params)) {
             if ($this->isRequired) {
-                throw new MissingParameterException("Required parameter {$name} not found in request");
+                $sourceDescription = empty($this->source) ? '' : " in {$this->source}";
+                throw new MissingParameterException(
+                    "Required parameter {$name} not found{$sourceDescription}"
+                );
             }
             return $this->default;
         }
@@ -99,6 +102,25 @@ abstract class Parameter
     }
 
     /**
+     * @param array $data
+     * @param string $sourceDescription Used for generating more explicit error messages
+     * @return $this
+     */
+    public function setData(array $data, string $sourceDescription = ''): self
+    {
+        $this->data = $data;
+        $this->source = $sourceDescription;
+        return $this;
+    }
+
+    /** @return static */
+    public function setRequest(Request $request): self
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
      * @throws HttpBadRequestException
      * @throws UnknownContentTypeException
      * @throws MissingParameterException
@@ -114,11 +136,6 @@ abstract class Parameter
         return $this->name;
     }
 
-    protected function getRequest(): Request
-    {
-        return $this->request;
-    }
-
     /** @throws InvalidParameterException */
     private function checkOptionIsValid($value): void
     {
@@ -129,20 +146,14 @@ abstract class Parameter
         $this->runValidators($value);
     }
 
-    /**
-     * @throws HttpBadRequestException
-     * @throws UnknownContentTypeException
-     */
-    private function getRequestParams(): array
+    private function getData(): array
     {
-        switch ($this->source) {
-            case self::FROM_BODY:
-                return $this->getRequest()->getBodyParams();
-            case self::FROM_QUERY_STRING:
-                return $this->getRequest()->getQueryParams();
-            case self::FROM_ANYWHERE:
-                return $this->getRequest()->getAllParams();
-        }
+        return $this->data;
+    }
+
+    private function getRequest(): Request
+    {
+        return $this->request;
     }
 
     /** @throws InvalidParameterException */
