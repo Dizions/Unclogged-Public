@@ -8,6 +8,7 @@ use Dizions\Unclogged\Errors\HttpBadRequestException;
 use Dizions\Unclogged\TestCase;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\StreamFactory;
+use LogicException;
 
 /** @covers Dizions\Unclogged\Request\Request */
 final class RequestTest extends TestCase
@@ -158,5 +159,51 @@ final class RequestTest extends TestCase
         $request = new Request($factory->createServerRequest('POST', '/?a=1', $server));
         $this->expectException(UnknownContentTypeException::class);
         $request->getBodyParams();
+    }
+
+    public function testIssetCanBeUsedToCheckIfParameterExists(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request(
+            $factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['b' => '2'])
+        );
+        $this->assertTrue(isset($request['a']));
+        $this->assertTrue(isset($request['b']));
+        $this->assertFalse(isset($request['c']));
+    }
+
+    public function testOffsetGetCanBeUsedToRetrieveParameter(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request(
+            $factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['b' => '2'])
+        );
+        $this->assertSame('1', $request['a']);
+        $this->assertSame('2', $request['b']);
+        $this->assertNull($request['c']);
+    }
+
+    public function testOffsetSetIsNotAllowed(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request(
+            $factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['b' => '2'])
+        );
+        $this->expectException(LogicException::class);
+        $request['a'] = '3';
+    }
+
+    public function testOffsetUnsetIsNotAllowed(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request(
+            $factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['b' => '2'])
+        );
+        $this->expectException(LogicException::class);
+        unset($request['a']);
     }
 }

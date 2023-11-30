@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Request;
 
+use ArrayAccess;
 use Dizions\Unclogged\Errors\HttpBadRequestException;
 use JsonException;
+use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
+use ReturnTypeWillChange;
 
-class Request
+class Request implements ArrayAccess
 {
     private array $allParams;
     private array $queryParams;
@@ -116,6 +119,54 @@ class Request
     public function getServerRequest(): ServerRequestInterface
     {
         return $this->serverRequest;
+    }
+
+    /**
+     * Check whether a parameter exists in the request URI or body
+     *
+     * @param mixed $offset
+     * @return bool
+     * @throws HttpBadRequestException
+     * @throws UnknownContentTypeException
+     */
+    public function offsetExists($offset): bool
+    {
+        return array_key_exists($offset, $this->getAllParams());
+    }
+
+    /**
+     * Get a parameter from the request URI or body
+     *
+     * @param mixed $offset
+     * @return mixed
+     * @throws HttpBadRequestException
+     * @throws UnknownContentTypeException
+     */
+    #[ReturnTypeWillChange]
+    public function offsetGet($offset)
+    {
+        return $this->getAllParams()[$offset] ?? null;
+    }
+
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @return never
+     * @throws LogicException
+     */
+    public function offsetSet($offset, $value): void
+    {
+        throw new LogicException('Request parameters are read-only');
+    }
+
+    /**
+     * @param mixed $offset
+     * @return never
+     * @throws LogicException
+     */
+    public function offsetUnset($offset): void
+    {
+        throw new LogicException('Request parameters are read-only');
     }
 
     private function assertBodyIsEmpty(): void
