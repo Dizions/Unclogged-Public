@@ -67,7 +67,6 @@ class Environment
                 $this->variables = array_merge($this->variables, $this->getVariablesFromDirectory($envDir));
             }
         }
-        $this->variables = array_map(fn ($v) => $this->decode($v), $this->variables);
         return $this;
     }
 
@@ -175,6 +174,7 @@ class Environment
                 Dotenv::createArrayBacked($dir, $envFile->getFileName())->load()
             );
         }
+        $variables = array_map(fn ($v) => $this->decode($v), $variables);
         return $variables;
     }
 
