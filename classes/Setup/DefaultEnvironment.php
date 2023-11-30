@@ -31,9 +31,8 @@ class DefaultEnvironment extends Environment
 
     public function getEnvironment(string $documentRoot): Environment
     {
-        return $this->merge(
-            Environment::fromGlobal([])
-                ->load($this->get('ENVIRONMENT_SEARCH_PATHS') ?? $this->searchPaths($documentRoot))
+        return $this->load(
+            $this->get('ENVIRONMENT_SEARCH_PATHS') ?? $this->searchPaths($documentRoot)
         );
     }
 
