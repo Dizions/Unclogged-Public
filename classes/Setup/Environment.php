@@ -6,6 +6,7 @@ namespace Dizions\Unclogged\Setup;
 
 use DirectoryIterator;
 use Dizions\Unclogged\Filesystem\FilesystemHelpers;
+use Dizions\Unclogged\Input\ParameterValidator;
 use Dotenv\Dotenv;
 use JsonException;
 use SplFileInfo;
@@ -54,6 +55,13 @@ class Environment
         $value = getenv($key);
         $this->variables[$key] = $value === false ? null : $this->decode($value);
         return $this->variables[$key];
+    }
+
+    public function getValidator(): ParameterValidator
+    {
+        $globalEnv = getenv();
+        $env = array_merge($globalEnv, $this->variables);
+        return (new ParameterValidator())->setData($env, 'environment');
     }
 
     /** @return static */

@@ -112,6 +112,11 @@ class Request implements ArrayAccess, Iterator
         return $this->serverRequest;
     }
 
+    public function getValidator(): ParameterValidator
+    {
+        return new ParameterValidator($this);
+    }
+
     #[ReturnTypeWillChange]
     public function current()
     {

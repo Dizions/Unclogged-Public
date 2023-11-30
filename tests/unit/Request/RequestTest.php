@@ -216,4 +216,15 @@ final class RequestTest extends TestCase
         );
         $this->assertSame(['a' => '1', 'b' => '2'], iterator_to_array($request));
     }
+
+    public function testParametersCanBeValidated(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request(
+            $factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['b' => '2'])
+        );
+        $validator = $request->getValidator();
+        $this->assertSame(1, $validator->int('a')->options([1, 3])->get());
+    }
 }

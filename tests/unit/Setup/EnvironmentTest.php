@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Setup;
 
+use Dizions\Unclogged\Input\InvalidParameterException;
 use Dizions\Unclogged\TestCase;
 
 /**
@@ -131,6 +132,16 @@ final class EnvironmentTest extends TestCase
         $first->merge($second);
         $this->assertNull($first->get(__METHOD__ . 'B'));
         $this->assertNull($second->get(__METHOD__ . 'A'));
+    }
+
+    public function testVariablesCanBeValidated(): void
+    {
+        putenv('A=1');
+        $env = new Environment([]);
+        $env->set('B', '2');
+        $this->assertSame(1, $env->getValidator()->int('A')->options([1, 3])->get());
+        $this->expectException(InvalidParameterException::class);
+        $env->getValidator()->int('B')->options([1, 3])->get();
     }
 
     private function setupTestEnvironmentDirectory(): string
