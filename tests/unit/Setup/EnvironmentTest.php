@@ -54,23 +54,25 @@ final class EnvironmentTest extends TestCase
 
     public function testCanGetVariableFromEnvironment(): void
     {
-        putenv('FOO=foo');
-        $env = new Environment([]);
+        $_ENV['FOO'] = 'foo';
+        $env = Environment::fromGlobal();
         $this->assertSame('foo', $env->get('FOO'));
+        $this->assertNull($env->get('BAR'));
+        $env = Environment::fromGlobal(['FOO' => 'bar']);
+        $this->assertSame('bar', $env->get('FOO'));
         $this->assertNull($env->get('BAR'));
     }
 
     public function testFilesOverrideEnvironment(): void
     {
-        putenv('A=foo');
-        $env = (new Environment())->load([$this->setupTestEnvironmentDirectory()]);
+        $env = Environment::fromGlobal(['A' => 'foo'])
+            ->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertSame('a', $env->get('A'));
     }
 
     public function testCanSetVariable(): void
     {
-        putenv('FOO=foo');
-        $env = new Environment([]);
+        $env = Environment::fromGlobal(['FOO' => 'foo']);
         $this->assertSame('foo', $env->get('FOO'));
         $this->assertNull($env->get('BAR'));
         $env->set('FOO', 'foo2');
@@ -96,8 +98,7 @@ final class EnvironmentTest extends TestCase
 
     public function testCanClearVariable(): void
     {
-        putenv('FOO=foo');
-        $env = new Environment([]);
+        $env = Environment::fromGlobal(['FOO' => 'foo']);
         $this->assertSame('foo', $env->get('FOO'));
         $env->clear('FOO');
         $this->assertNull($env->get('FOO'));
@@ -105,8 +106,7 @@ final class EnvironmentTest extends TestCase
 
     public function testCanRemoveVariableFromNewEnvironmentWithoutMutatingOriginal(): void
     {
-        putenv('FOO=foo');
-        $env = new Environment([]);
+        $env = Environment::fromGlobal(['FOO' => 'foo']);
         $new = $env->withoutVariable('FOO', 'foo');
         $this->assertSame('foo', $env->get('FOO'));
         $this->assertNull($new->get('FOO'));
@@ -139,8 +139,7 @@ final class EnvironmentTest extends TestCase
 
     public function testVariablesCanBeValidated(): void
     {
-        putenv('A=1');
-        $env = new Environment([]);
+        $env = Environment::fromGlobal(['A' => '1']);
         $env->set('B', '2');
         $this->assertSame(1, $env->getValidator()->int('A')->options([1, 3])->get());
         $this->expectException(InvalidParameterException::class);

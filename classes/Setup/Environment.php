@@ -31,11 +31,18 @@ class Environment
     private array $variables = [];
 
     /**
-     * @param iterable $environmentFilePaths Load all .env files in the given paths, in order
+     * @param ?array $env If not provided, the $_ENV superglobal will be used
+     * @return static
      */
-    public function __construct(iterable $environmentFilePaths = [])
+    public static function fromGlobal(?array $env = null): self
     {
-        $this->load($environmentFilePaths);
+        return new static($env);
+    }
+
+    public function __construct(?array $env = null)
+    {
+        $env ??= $_ENV;
+        $this->variables = array_map(fn ($v) => $this->decode($v), $env);
     }
 
     /**
@@ -44,19 +51,12 @@ class Environment
      */
     public function get(string $key)
     {
-        if (array_key_exists($key, $this->variables)) {
-            return $this->variables[$key];
-        }
-        $value = getenv($key);
-        $this->variables[$key] = $value === false ? null : $this->decode($value);
-        return $this->variables[$key];
+        return $this->variables[$key] ?? null;
     }
 
     public function getValidator(): ParameterValidator
     {
-        $globalEnv = getenv();
-        $env = array_merge($globalEnv, $this->variables);
-        return (new ParameterValidator())->setData($env, 'environment');
+        return (new ParameterValidator())->setData($this->variables, 'environment');
     }
 
     /** @param iterable $environmentFilePaths Load all .env files in the given paths, in order */

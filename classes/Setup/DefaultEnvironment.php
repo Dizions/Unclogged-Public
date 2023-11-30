@@ -26,8 +26,8 @@ class DefaultEnvironment extends Environment
 
     public function __construct(string $documentRoot)
     {
+        parent::__construct();
         $this->documentRoot = $documentRoot;
-        parent::__construct([]);
         foreach ($this->defaults as $k => $v) {
             if ($this->get($k) === null) {
                 // This variable wasn't found in the real environment
