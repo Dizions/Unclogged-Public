@@ -6,12 +6,13 @@ namespace Dizions\Unclogged\Request;
 
 use ArrayAccess;
 use Dizions\Unclogged\Errors\HttpBadRequestException;
+use Iterator;
 use JsonException;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
 use ReturnTypeWillChange;
 
-class Request implements ArrayAccess
+class Request implements ArrayAccess, Iterator
 {
     private array $allParams;
     private array $queryParams;
@@ -33,17 +34,7 @@ class Request implements ArrayAccess
      */
     public function getAllParams(): array
     {
-        if (!isset($this->allParams)) {
-            $queryParams = $this->getQueryParams();
-            $bodyParams = $this->getBodyParams();
-            $potentialConflicts = array_intersect_key($queryParams, $bodyParams);
-            foreach ($potentialConflicts as $key => $queryVersion) {
-                if ($bodyParams[$key] !== $queryVersion) {
-                    throw new HttpBadRequestException("Conflicting values for $key given in request");
-                }
-            }
-            $this->allParams = array_merge($this->getQueryParams(), $this->getBodyParams());
-        }
+        $this->initialiseAllParameters();
         return $this->allParams;
     }
 
@@ -119,6 +110,38 @@ class Request implements ArrayAccess
     public function getServerRequest(): ServerRequestInterface
     {
         return $this->serverRequest;
+    }
+
+    #[ReturnTypeWillChange]
+    public function current()
+    {
+        $this->initialiseAllParameters();
+        return current($this->allParams);
+    }
+
+    #[ReturnTypeWillChange]
+    public function key()
+    {
+        $this->initialiseAllParameters();
+        return key($this->allParams);
+    }
+
+    public function next(): void
+    {
+        $this->initialiseAllParameters();
+        next($this->allParams);
+    }
+
+    public function rewind(): void
+    {
+        $this->initialiseAllParameters();
+        reset($this->allParams);
+    }
+
+    public function valid(): bool
+    {
+        $this->initialiseAllParameters();
+        return key($this->allParams) !== null;
     }
 
     /**
@@ -198,5 +221,21 @@ class Request implements ArrayAccess
             return $decodedBody;
         }
         throw new HttpBadRequestException('Expected JSON-encoded array in request body');
+    }
+
+    private function initialiseAllParameters(): void
+    {
+        if (isset($this->allParams)) {
+            return;
+        }
+        $queryParams = $this->getQueryParams();
+        $bodyParams = $this->getBodyParams();
+        $potentialConflicts = array_intersect_key($queryParams, $bodyParams);
+        foreach ($potentialConflicts as $key => $queryVersion) {
+            if ($bodyParams[$key] !== $queryVersion) {
+                throw new HttpBadRequestException("Conflicting values for $key given in request");
+            }
+        }
+        $this->allParams = array_merge($this->getQueryParams(), $this->getBodyParams());
     }
 }
