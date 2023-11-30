@@ -110,10 +110,16 @@ class Environment
      * @param string $key
      * @return static
      */
-    public function withoutVariable(string $key): self
+    public function without(string $key): self
     {
         $new = clone $this;
         return $new->clear($key);
+    }
+
+    /** @see without() */
+    public function withoutVariable(string $key): self
+    {
+        return $this->without($key);
     }
 
     /**
