@@ -29,11 +29,24 @@ class DefaultEnvironment extends Environment
         $this->setDefaults($this->defaults);
     }
 
-    public function getEnvironment(string $documentRoot): Environment
+    /**
+     * Search for .env files in the directories listed in ENVIRONMENT_SEARCH_PATHS, and load them.
+     * @see searchPaths() for the default list of search paths
+     *
+     * @param string $documentRoot
+     * @return Environment
+     */
+    public function search(string $documentRoot): self
     {
         return $this->load(
             $this->get('ENVIRONMENT_SEARCH_PATHS') ?? $this->searchPaths($documentRoot)
         );
+    }
+
+    /** @deprecated */
+    public function getEnvironment(string $documentRoot): Environment
+    {
+        return $this->search($documentRoot);
     }
 
     /**
