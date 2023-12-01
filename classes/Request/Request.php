@@ -64,7 +64,7 @@ class Request implements ArrayAccess, Iterator
 
     /**
      * Get the first matching header, or null.
-     * @param string $header
+     * @param string $header Case-insensitive header name
      * @return null|string
      */
     public function getHeader(string $header): ?string
