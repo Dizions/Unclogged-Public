@@ -117,6 +117,12 @@ class Request implements ArrayAccess, Iterator
         return new ParameterValidator($this);
     }
 
+    public function isHardRefresh(): bool
+    {
+        return $this->getHeader('Cache-Control') === 'no-cache' &&
+               $this->getHeader('Pragma') === 'no-cache';
+    }
+
     #[ReturnTypeWillChange]
     public function current()
     {

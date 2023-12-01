@@ -227,4 +227,13 @@ final class RequestTest extends TestCase
         $validator = $request->getValidator();
         $this->assertSame(1, $validator->int('a')->options([1, 3])->get());
     }
+
+    public function testCanDetermineIfRequestIsHardRefresh(): void
+    {
+        $server = ['HTTP_CACHE_CONTROL' => 'no-cache', 'HTTP_PRAGMA' => 'no-cache'];
+        $request = new Request(ServerRequestFactory::fromGlobals($server));
+        $this->assertTrue($request->isHardRefresh());
+        $request = new Request(ServerRequestFactory::fromGlobals([]));
+        $this->assertFalse($request->isHardRefresh());
+    }
 }
