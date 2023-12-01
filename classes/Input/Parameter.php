@@ -75,6 +75,11 @@ abstract class Parameter
         return $value;
     }
 
+    public function notEmpty(): self
+    {
+        return $this->addValidator(fn ($x) => !empty($x));
+    }
+
     /**
      * Set an array of permitted values for this parameter
      * @param array $options
@@ -96,6 +101,16 @@ abstract class Parameter
         $this->data = $data;
         $this->source = $sourceDescription;
         return $this;
+    }
+
+    /**
+     * @return void
+     * @throws MissingParameterException
+     * @throws InvalidParameterException
+     */
+    public function validate(): void
+    {
+        $this->get();
     }
 
     /**

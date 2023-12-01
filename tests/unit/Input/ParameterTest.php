@@ -36,12 +36,20 @@ final class ParameterTest extends TestCase
         $this->assertSame('5', (string)$parameter);
     }
 
-    public function testExceptionWillBeThrownIfRequiredParameterWasNotGiven(): void
+    public function testExceptionWillBeThrownOnGetIfRequiredParameterWasNotGiven(): void
     {
         $request = $this->createMock(Request::class);
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['var', $request]);
         $this->expectException(MissingParameterException::class);
         $parameter->get();
+    }
+
+    public function testExceptionWillBeThrownOnValidateIfRequiredParameterWasNotGiven(): void
+    {
+        $request = $this->createMock(Request::class);
+        $parameter = $this->getMockForAbstractClass(Parameter::class, ['var', $request]);
+        $this->expectException(MissingParameterException::class);
+        $parameter->validate();
     }
 
     public function testParameterCanBeRetrievedFromQueryStringOrBody(): void
@@ -57,7 +65,7 @@ final class ParameterTest extends TestCase
         $this->assertSame('y', $parameter->get());
     }
 
-    public function testValidOptionsCanBeSpecified(): void
+    public function testExceptionWillBeThrownOnGetIfValueIsInvalid(): void
     {
         $request = $this->getPostRequest(['a' => 1, 'b' => 2]);
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', $request]);
@@ -65,6 +73,24 @@ final class ParameterTest extends TestCase
         $parameter = $this->getMockForAbstractClass(Parameter::class, ['b', $request]);
         $this->expectException(InvalidParameterException::class);
         $parameter->options([1, 3])->get();
+    }
+
+    public function testExceptionWillBeThrownOnValidateIfValueIsInvalid(): void
+    {
+        $request = $this->getPostRequest(['a' => 1, 'b' => 2]);
+        $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', $request]);
+        $this->assertSame(1, $parameter->options([1, 2, 3])->get());
+        $parameter = $this->getMockForAbstractClass(Parameter::class, ['b', $request]);
+        $this->expectException(InvalidParameterException::class);
+        $parameter->options([1, 3])->validate();
+    }
+
+    public function testEmptyValuesMayBeDisallowed(): void
+    {
+        $parameter = $this->getMockForAbstractClass(Parameter::class, ['a', ['a' => '']]);
+        $this->assertSame('', $parameter->get());
+        $this->expectException(InvalidParameterException::class);
+        $parameter->notEmpty()->validate();
     }
 
     public function testCustomValidatorCanBeRefined(): void
