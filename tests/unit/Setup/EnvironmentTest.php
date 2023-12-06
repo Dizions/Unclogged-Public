@@ -52,6 +52,18 @@ final class EnvironmentTest extends TestCase
         $this->assertSame([1, 'a'], $env->get('JSON'));
     }
 
+    public function testFloatsAreNotDecoded(): void
+    {
+        $env = Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()]);
+        $this->assertIsFloat($env->get('FLOAT'));
+    }
+
+    public function testIntegersAreNotDecoded(): void
+    {
+        $env = Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()]);
+        $this->assertIsInt($env->get('INT'));
+    }
+
     public function testCanGetVariableFromEnvironment(): void
     {
         $_ENV['FOO'] = 'foo';
@@ -158,7 +170,7 @@ final class EnvironmentTest extends TestCase
     {
         $dir = dirname(__DIR__, 2) . '/tmp';
         file_put_contents("$dir/a.env", "A=a\nX=x\nJSON='" . json_encode([1, 'a']) . "'");
-        file_put_contents("$dir/b.env", "B=b\nX=overridden");
+        file_put_contents("$dir/b.env", "B=b\nX=overridden\nFLOAT=3.12\nINT=7");
         file_put_contents("$dir/c.ignored", "C=c\nX=c");
         file_put_contents("$dir/d", "D=d\nX=d");
         return $dir;

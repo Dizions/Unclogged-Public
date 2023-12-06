@@ -174,7 +174,7 @@ class Environment
                 Dotenv::createArrayBacked($dir, $envFile->getFileName())->load()
             );
         }
-        $variables = array_map(fn ($v) => $this->decode($v), $variables);
+        $variables = array_map(fn ($v) => is_string($v) ? $this->decode($v) : $v, $variables);
         return $variables;
     }
 
