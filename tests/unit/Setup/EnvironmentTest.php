@@ -56,11 +56,15 @@ final class EnvironmentTest extends TestCase
     {
         $env = Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()]);
         $this->assertIsFloat($env->get('FLOAT'));
+        $env = new Environment(['FLOAT' => 3.12]);
+        $this->assertIsFloat($env->get('FLOAT'));
     }
 
     public function testIntegersAreNotDecoded(): void
     {
         $env = Environment::fromGlobal()->load([$this->setupTestEnvironmentDirectory()]);
+        $this->assertIsInt($env->get('INT'));
+        $env = new Environment(['INT' => 1]);
         $this->assertIsInt($env->get('INT'));
     }
 

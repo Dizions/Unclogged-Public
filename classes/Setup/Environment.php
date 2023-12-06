@@ -42,7 +42,7 @@ class Environment
     public function __construct(?array $env = null)
     {
         $env ??= $_ENV;
-        $this->variables = array_map(fn ($v) => $this->decode($v), $env);
+        $this->variables = array_map(fn ($v) => is_string($v) ? $this->decode($v) : $v, $env);
     }
 
     /**
