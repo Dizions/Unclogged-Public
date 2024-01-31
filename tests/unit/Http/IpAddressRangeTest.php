@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Http;
 
 use DomainException;
 use Dizions\Unclogged\TestCase;
 
-/** @covers Dizions\Unclogged\Request\IpAddressRange */
+/** @covers Dizions\Unclogged\Http\IpAddressRange */
 final class IpAddressRangeTest extends TestCase
 {
     public function testInvalidIp4AddressIsRejected(): void

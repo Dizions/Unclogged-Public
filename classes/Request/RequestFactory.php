@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Request;
 
+use Dizions\Unclogged\Http\IpAddressRange;
 use Dizions\Unclogged\Setup\Environment;
 use Laminas\Diactoros\ServerRequestFactory;
 
