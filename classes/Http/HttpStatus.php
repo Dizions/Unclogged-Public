@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Response;
+namespace Dizions\Unclogged\Http;
 
 abstract class HttpStatus
 {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Response;
+namespace Dizions\Unclogged\Http;
 
 use Dizions\Unclogged\TestCase;
 use ReflectionClass;
 
-/** @covers Dizions\Unclogged\Response\HttpStatus */
+/** @covers Dizions\Unclogged\Http\HttpStatus */
 class HttpStatusTest extends TestCase
 {
     public function testUnknownResponseCodeIsReturnedAsString(): void
