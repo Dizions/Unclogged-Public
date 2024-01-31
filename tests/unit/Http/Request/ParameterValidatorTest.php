@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Http\Request;
 
 use Dizions\Unclogged\Input\MissingParameterException;
 use Dizions\Unclogged\TestCase;
 
 /**
- * @covers Dizions\Unclogged\Request\ParameterValidator
+ * @covers Dizions\Unclogged\Http\Request\ParameterValidator
  */
 final class ParameterValidatorTest extends TestCase
 {

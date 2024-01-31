@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Http\Request;
 
 use Dizions\Unclogged\Errors\HttpBadRequestException;
 use Dizions\Unclogged\TestCase;
@@ -10,7 +10,7 @@ use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\StreamFactory;
 use LogicException;
 
-/** @covers Dizions\Unclogged\Request\Request */
+/** @covers Dizions\Unclogged\Http\Request\Request */
 final class RequestTest extends TestCase
 {
     public function testServerRequestCanBeRetrieved(): void

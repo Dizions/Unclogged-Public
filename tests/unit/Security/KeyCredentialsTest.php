@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Dizions\Unclogged\Security;
 
 use Dizions\Unclogged\Database\Database;
-use Dizions\Unclogged\Request\RequestFactory;
-use Dizions\Unclogged\Request\Request;
+use Dizions\Unclogged\Http\Request\RequestFactory;
+use Dizions\Unclogged\Http\Request\Request;
 use Dizions\Unclogged\Security\Password\PasswordValidator;
 use Dizions\Unclogged\Setup\Environment;
 use Dizions\Unclogged\Setup\InvalidConfigurationException;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Input;
 
-use Dizions\Unclogged\Request\Request;
+use Dizions\Unclogged\Http\Request\Request;
 use Laminas\Diactoros\ServerRequestFactory;
 
 /**

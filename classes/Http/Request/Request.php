@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Http\Request;
 
 use ArrayAccess;
 use Dizions\Unclogged\Errors\HttpBadRequestException;

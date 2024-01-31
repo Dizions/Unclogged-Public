@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Http\Request;
 
 use Dizions\Unclogged\Http\IpAddressRange;
 use Dizions\Unclogged\Setup\Environment;

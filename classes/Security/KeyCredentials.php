@@ -10,7 +10,7 @@ use PDO;
 use PDOException;
 use Dizions\Unclogged\Database\Database;
 use Dizions\Unclogged\Http\IpAddressRange;
-use Dizions\Unclogged\Request\Request;
+use Dizions\Unclogged\Http\Request\Request;
 use Dizions\Unclogged\Setup\InvalidConfigurationException;
 
 /**

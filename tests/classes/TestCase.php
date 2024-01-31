@@ -7,7 +7,7 @@ namespace Dizions\Unclogged;
 use Dizions\Unclogged\Database\BasicConnectionParameters;
 use Dizions\Unclogged\Database\Database;
 use Dizions\Unclogged\Database\Schema\{ColumnSchema, TableSchema};
-use Dizions\Unclogged\Request\Request;
+use Dizions\Unclogged\Http\Request\Request;
 use Dizions\Unclogged\Setup\{DefaultEnvironment, Environment};
 use PHPUnit\Framework\TestCase as BaseTestCase;
 

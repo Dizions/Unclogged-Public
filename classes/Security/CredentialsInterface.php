@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dizions\Unclogged\Security;
 
-use Dizions\Unclogged\Request\Request;
+use Dizions\Unclogged\Http\Request\Request;
 
 interface CredentialsInterface
 {

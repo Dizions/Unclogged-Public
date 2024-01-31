@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Dizions\Unclogged\Request;
+namespace Dizions\Unclogged\Http\Request;
 
 use Dizions\Unclogged\Setup\Environment;
 use Dizions\Unclogged\TestCase;
 
 /**
- * @covers Dizions\Unclogged\Request\RequestFactory
+ * @covers Dizions\Unclogged\Http\Request\RequestFactory
  */
 final class RequestFactoryTest extends TestCase
 {
