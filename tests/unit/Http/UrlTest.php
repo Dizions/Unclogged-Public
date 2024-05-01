@@ -19,6 +19,7 @@ final class UrlTest extends TestCase
     public function testParametersCanBeRetrieved(): void
     {
         $url = new Url('https://www.example.com?foo=1&bar=2');
+        $this->assertSame(['foo' => '1', 'bar' => '2'], $url->getParameters());
         $this->assertSame('1', $url->getParameter('foo'));
         $this->assertSame('2', $url->getParameter('bar'));
         $this->assertNull($url->getParameter('baz'));
@@ -29,6 +30,7 @@ final class UrlTest extends TestCase
         $url = new Url('https://www.example.com?foo=1&bar=2');
         $this->assertSame('https://www.example.com?foo=1&bar=2', (string)$url);
         $this->assertSame('host?foo=1&bar=2', (string)$url->withBaseUrl('host'));
+        $this->assertSame('newhost', $url->withBaseUrl('newhost')->getBaseUrl());
     }
 
     public function testParametersCanBeAddedAndReplaced(): void

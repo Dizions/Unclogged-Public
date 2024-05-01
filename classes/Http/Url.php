@@ -27,9 +27,19 @@ class Url
         return "$this->base?$newParamString";
     }
 
+    public function getBaseUrl(): string
+    {
+        return $this->base;
+    }
+
     public function getParameter(string $name): ?string
     {
         return $this->urlParams[$name] ?? null;
+    }
+
+    public function getParameters(): array
+    {
+        return $this->urlParams;
     }
 
     /**
