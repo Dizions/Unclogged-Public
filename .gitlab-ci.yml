@@ -27,11 +27,6 @@ stages:
     - "grep 'Lines:  ' tests/output/coverage/summary.txt"
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
 
-test:7.4:
-  extends: .test-base
-  variables:
-    PHP_VERSION: "7.4"
-
 test:8.0:
   extends: .test-base
   variables:
