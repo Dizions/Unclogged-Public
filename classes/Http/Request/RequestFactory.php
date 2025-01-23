@@ -17,7 +17,14 @@ class RequestFactory
         $this->trustedProxies = $env->get('TRUSTED_PROXIES') ?? [];
     }
 
-    /** Create a Request object with its server info adjusted to hide the details of any proxies. */
+    /**
+     * Create a Request object with its server info adjusted to hide the details of any proxies.
+     *
+     * This will check if REMOTE_ADDR is found in one of the CIDR-ranges specified in
+     * TRUSTED_PROXIES. If so, it will follow X-Forwarded-For backwards until it finds an untrusted
+     * address, and use that as the new REMOTE_ADDR. If X-Forwarded-For is not set, but X-Real-IP
+     * is, that will be used instead.
+     */
     public function fromGlobals(
         array $server = null,
         array $get = null,
