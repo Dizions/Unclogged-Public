@@ -26,11 +26,11 @@ class RequestFactory
      * is, that will be used instead.
      */
     public function fromGlobals(
-        array $server = null,
-        array $get = null,
-        array $post = null,
-        array $cookie = null,
-        array $files = null
+        ?array $server = null,
+        ?array $get = null,
+        ?array $post = null,
+        ?array $cookie = null,
+        ?array $files = null
     ): Request {
         if ($server === null) {
             $server = ServerRequestFactory::fromGlobals()->getServerParams();
@@ -42,11 +42,11 @@ class RequestFactory
 
     /** @deprecated */
     public function proxiedRequestFromGlobals(
-        array $server = null,
-        array $get = null,
-        array $post = null,
-        array $cookie = null,
-        array $files = null
+        ?array $server = null,
+        ?array $get = null,
+        ?array $post = null,
+        ?array $cookie = null,
+        ?array $files = null
     ): Request {
         return $this->fromGlobals($server, $get, $post, $cookie, $files);
     }

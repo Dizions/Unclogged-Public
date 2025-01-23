@@ -8,7 +8,7 @@ use Throwable;
 
 class HttpForbiddenException extends HttpException
 {
-    public function __construct(string $messageForUser, Throwable $previous = null)
+    public function __construct(string $messageForUser, ?Throwable $previous = null)
     {
         parent::__construct($messageForUser, 403, $previous);
     }

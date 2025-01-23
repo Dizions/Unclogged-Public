@@ -12,7 +12,7 @@ use Dizions\Unclogged\Security\Password\NullPasswordValidator;
 
 class HttpUnauthorizedException extends HttpException
 {
-    public function __construct(string $messageForUser, Throwable $previous = null)
+    public function __construct(string $messageForUser, ?Throwable $previous = null)
     {
         parent::__construct($messageForUser, 401, $previous);
     }

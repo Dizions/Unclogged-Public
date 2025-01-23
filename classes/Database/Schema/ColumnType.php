@@ -52,7 +52,7 @@ class ColumnType
         return new self($name);
     }
 
-    public static function char(int $length = null, string $characterSet = null): self
+    public static function char(?int $length = null, ?string $characterSet = null): self
     {
         $columnType = new self(__FUNCTION__);
         if ($length !== null) {
@@ -64,7 +64,7 @@ class ColumnType
         return $columnType;
     }
 
-    public static function varchar(int $length = null, string $characterSet = null): self
+    public static function varchar(?int $length = null, ?string $characterSet = null): self
     {
         $columnType = new self(__FUNCTION__);
         if ($length !== null) {
@@ -76,7 +76,7 @@ class ColumnType
         return $columnType;
     }
 
-    public static function text(string $characterSet = ''): self
+    public static function text(?string $characterSet = ''): self
     {
         $columnType = new self(__FUNCTION__);
         if ($characterSet !== null) {

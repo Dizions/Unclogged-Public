@@ -23,7 +23,7 @@ class AccessControlListTest extends TestCase
     }
 
     /** @dataProvider validAclJsonProvider */
-    public function testAclsCanBeCorrectlyConvertedBackToJsonAfterParsing(string $json, string $normalised = null): void
+    public function testAclsCanBeCorrectlyConvertedBackToJsonAfterParsing(string $json, ?string $normalised = null): void
     {
         $this->assertSame($this->normaliseJson($normalised ?? $json), (new AccessControlList($json))->toJson());
     }
