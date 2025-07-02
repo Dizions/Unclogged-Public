@@ -17,6 +17,9 @@ class IntParameter extends Parameter
 
     private function isInteger($in): bool
     {
+        if (is_string($in)) {
+            $in = preg_replace('/^[0]+(?!$)/', '', trim($in));
+        }
         return is_int($in) || is_string($in) && ((string)(int)$in) === $in;
     }
 }

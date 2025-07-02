@@ -17,11 +17,11 @@ final class IntParameterTest extends TestCase
         $parameter->get();
     }
 
-    public function testValidValuesAreConvertedToInteger(): void
+    /** @dataProvider validValuesProvider */
+    public function testValidValuesAreConvertedToInteger($in, $expected): void
     {
-        $request = $this->getPostRequest(['a' => 3, 'b' => '3']);
-        $this->assertSame(3, (new IntParameter('a', $request))->get());
-        $this->assertSame(3, (new IntParameter('b', $request))->get());
+        $request = $this->getPostRequest(['a' => $in]);
+        $this->assertSame($expected, (new IntParameter('a', $request))->get());
     }
 
     public static function invalidValuesProvider(): array
@@ -34,6 +34,19 @@ final class IntParameterTest extends TestCase
             ['1.0'],
             [INF],
             [NAN],
+        ];
+    }
+
+    public static function validValuesProvider(): array
+    {
+        return [
+            [3, 3],
+            ['3', 3],
+            ['0003', 3],
+            ['00', 0],
+            ['0', 0],
+            [-1, -1],
+            ['-1', -1],
         ];
     }
 }
