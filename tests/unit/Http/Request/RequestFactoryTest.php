@@ -7,24 +7,47 @@ namespace Dizions\Unclogged\Http\Request;
 use Dizions\Unclogged\Setup\Environment;
 use Dizions\Unclogged\TestCase;
 
-/**
- * @covers Dizions\Unclogged\Http\Request\RequestFactory
- */
+/** @covers Dizions\Unclogged\Http\Request\RequestFactory */
 final class RequestFactoryTest extends TestCase
 {
     public function testCanCreateRequestWithNoParameters(): void
     {
-        $this->assertInstanceOf(
-            Request::class,
-            (new RequestFactory(new Environment([])))->proxiedRequestFromGlobals()
-        );
+        $env = new Environment([]);
+        $this->assertInstanceOf(Request::class, (new RequestFactory($env))->fromGlobals());
+        $this->assertInstanceOf(Request::class, (new RequestFactory($env))->proxiedRequestFromGlobals());
     }
 
     /** @dataProvider remoteAddressServerInfoProvider */
     public function testCanDetermineRealSourceIp(string $expected, array $server): void
     {
-        $request = (new RequestFactory($this->getDefaultEnvironment()))->proxiedRequestFromGlobals($server);
+        $request = (new RequestFactory($this->getDefaultEnvironment()))->fromGlobals($server);
+        $request = RequestFactory::default()->fromGlobals($server);
         $this->assertSame($expected, $request->getRemoteAddress());
+    }
+
+    public function testTrustedRemotesCanBeExplicitlySet(): void
+    {
+        $server = [
+            'REMOTE_ADDR' => '127.0.0.1',
+            'HTTP_X_FORWARDED_FOR' => '1.2.3.4',
+        ];
+        $this->assertSame(
+            '127.0.0.1',
+            RequestFactory::withTrustedProxies([])->fromGlobals($server)->getRemoteAddress()
+        );
+        $this->assertSame(
+            '127.0.0.1',
+            RequestFactory::withTrustedProxies(['1.2.3.4'])->fromGlobals($server)->getRemoteAddress()
+        );
+        $server = [
+            'REMOTE_ADDR' => '127.0.0.1',
+            'HTTP_X_FORWARDED_FOR' => '1.2.3.4,10.0.0.5',
+        ];
+        $this->assertSame(
+            '10.0.0.5',
+            RequestFactory::withTrustedProxies(['127.0.0.1', '1.2.3.4'])->fromGlobals($server)
+                                                                        ->getRemoteAddress()
+        );
     }
 
     public static function remoteAddressServerInfoProvider()

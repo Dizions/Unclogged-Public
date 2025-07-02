@@ -5,16 +5,31 @@ declare(strict_types=1);
 namespace Dizions\Unclogged\Http\Request;
 
 use Dizions\Unclogged\Http\IpAddressRange;
+use Dizions\Unclogged\Setup\DefaultEnvironment;
 use Dizions\Unclogged\Setup\Environment;
 use Laminas\Diactoros\ServerRequestFactory;
 
 class RequestFactory
 {
+    /** @var string[] */
     private array $trustedProxies;
 
     public function __construct(Environment $env)
     {
         $this->trustedProxies = $env->get('TRUSTED_PROXIES') ?? [];
+    }
+
+    public static function default(): self
+    {
+        $env = new DefaultEnvironment();
+        return new self($env);
+    }
+
+    public static function withTrustedProxies(array $trustedProxies): self
+    {
+        $env = new Environment();
+        $env->set('TRUSTED_PROXIES', $trustedProxies);
+        return new self($env);
     }
 
     /**
@@ -82,11 +97,8 @@ class RequestFactory
             do {
                 $remoteAddr = trim(array_pop($addresses));
             } while (count($addresses) && self::isTrustedProxy($remoteAddr));
-        } elseif (!empty($serverParams['HTTP_X_REAL_IP'])) {
-            $remoteAddr = $serverParams['HTTP_X_REAL_IP'];
-        } else {
-            $remoteAddr = null;
+            return $remoteAddr;
         }
-        return $remoteAddr;
+        return $serverParams['HTTP_X_REAL_IP'] ?? null;
     }
 }
