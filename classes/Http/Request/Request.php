@@ -38,6 +38,11 @@ class Request implements ArrayAccess, Iterator
         return $this->allParams;
     }
 
+    public function getBody(): string
+    {
+        return (string)$this->serverRequest->getBody();
+    }
+
     /**
      * Get all parameters from the request body
      * @return array
@@ -81,8 +86,8 @@ class Request implements ArrayAccess, Iterator
     public function getJsonParams()
     {
         try {
-            return json_decode((string)$this->serverRequest->getBody(), true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+            return json_decode($this->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
             return null;
         }
     }
@@ -205,7 +210,7 @@ class Request implements ArrayAccess, Iterator
 
     private function assertBodyIsEmpty(): void
     {
-        if ((string)$this->serverRequest->getBody() || $this->serverRequest->getParsedBody()) {
+        if ($this->getBody() || $this->serverRequest->getParsedBody()) {
             throw new UnknownContentTypeException('No content-type specified for request body');
         }
     }
@@ -216,6 +221,14 @@ class Request implements ArrayAccess, Iterator
             case 'application/json':
                 return $this->getJsonArray();
             case 'application/x-www-form-urlencoded':
+                $numberOfPostedValues = substr_count($this->getBody(), '&') + 1;
+                $maxInputVars = (int)ini_get('max_input_vars');
+                if ($numberOfPostedValues > $maxInputVars) {
+                    throw new HttpBadRequestException(
+                        "Request body exceeds maximum number of input variables ($maxInputVars)"
+                    );
+                }
+                return $this->serverRequest->getParsedBody();
             case 'multipart/form-data':
                 return $this->serverRequest->getParsedBody();
         }

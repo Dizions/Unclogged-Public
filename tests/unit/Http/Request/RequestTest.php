@@ -228,6 +228,33 @@ final class RequestTest extends TestCase
         $this->assertSame(1, $validator->int('a')->options([1, 3])->get());
     }
 
+    public function testMultipartFormDataParametersCanBeValidated(): void
+    {
+        $factory = new ServerRequestFactory();
+        $server = ['CONTENT_TYPE' => 'multipart/form-data'];
+        $request = new Request(
+            $factory->createServerRequest('POST', '/?a=1', $server)->withParsedBody(['b' => '2'])
+        );
+        $validator = $request->getValidator();
+        $this->assertSame(1, $validator->int('a')->options([1, 3])->get());
+    }
+
+    public function testRequestExceedingMaxInputVarsIsDetected(): void
+    {
+        $postData = [];
+        for ($i = 0; $i <= 11; $i++) {
+            $postData[] = "key$i=val$i";
+        }
+        $postData = implode('&', $postData);
+        $server = ['CONTENT_TYPE' => 'application/x-www-form-urlencoded'];
+        $request = new Request(
+            ServerRequestFactory::fromGlobals($server)
+                ->withBody((new StreamFactory())->createStream($postData))
+        );
+        $this->expectException(HttpBadRequestException::class);
+        $request->getAllParams();
+    }
+
     public function testCanDetermineIfRequestIsHardRefresh(): void
     {
         $server = ['HTTP_CACHE_CONTROL' => 'no-cache', 'HTTP_PRAGMA' => 'no-cache'];
@@ -236,4 +263,12 @@ final class RequestTest extends TestCase
         $request = new Request(ServerRequestFactory::fromGlobals([]));
         $this->assertFalse($request->isHardRefresh());
     }
+}
+
+function ini_get(string $option): string|int
+{
+    if ($option === 'max_input_vars') {
+        return 10;
+    }
+    return \ini_get($option);
 }
