@@ -255,6 +255,26 @@ final class RequestTest extends TestCase
         $request->getAllParams();
     }
 
+    /**
+     * This doesn't tell us a great deal about how this will work in a real request where the parsed
+     * body has been limited by PHP - see MaxInputVarsPostTest for a more realistic integration
+     * test.
+     */
+    public function testMultipartFormDataRequestExceedingMaxInputVarsIsDetected(): void
+    {
+        $parsedBody = [];
+        for ($i = 0; $i <= 11; $i++) {
+            $parsedBody["key$i"] = "val$i";
+        }
+        $server = ['CONTENT_TYPE' => 'multipart/form-data'];
+        $request = new Request(
+            ServerRequestFactory::fromGlobals($server)
+                ->withParsedBody($parsedBody)
+        );
+        $this->expectException(HttpBadRequestException::class);
+        $request->getAllParams();
+    }
+
     public function testCanDetermineIfRequestIsHardRefresh(): void
     {
         $server = ['HTTP_CACHE_CONTROL' => 'no-cache', 'HTTP_PRAGMA' => 'no-cache'];

@@ -230,7 +230,19 @@ class Request implements ArrayAccess, Iterator
                 }
                 return $this->serverRequest->getParsedBody();
             case 'multipart/form-data':
-                return $this->serverRequest->getParsedBody();
+                // We can't get the raw body to know for certain, but we can try to count the number
+                // of parsed values and see if it hits the limit.
+                // This is not 100% accurate and can have both false positives and false negatives
+                // if the number of values is close to the limit.
+                $parsedBody = $this->serverRequest->getParsedBody();
+                $numberOfPostedValues = count($parsedBody, COUNT_RECURSIVE);
+                $maxInputVars = (int)ini_get('max_input_vars');
+                if ($numberOfPostedValues >= $maxInputVars) {
+                    throw new HttpBadRequestException(
+                        "Request body exceeds maximum number of input variables ($maxInputVars)"
+                    );
+                }
+                return $parsedBody;
         }
         throw new UnknownContentTypeException("Unknown content-type: $contentType");
     }
