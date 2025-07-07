@@ -11,10 +11,10 @@
     },
     "require": {
         "php": "8.1 - 8.4",
-        "laminas/laminas-diactoros": "^3.3 || ^2",
+        "laminas/laminas-diactoros": "^3",
         "laminas/laminas-httphandlerrunner": "^2",
-        "opis/json-schema": "^2.3",
-        "psr/log": "^3.0",
-        "vlucas/phpdotenv": "^5.6"
+        "opis/json-schema": "^2",
+        "psr/log": "^3",
+        "vlucas/phpdotenv": "^5"
     }
 }
